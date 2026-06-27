@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select, func, union_all
+from sqlalchemy import select, func, union_all, case
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -103,7 +103,7 @@ async def get_discovery(
     # City filtering — prefer same city
     if user.city:
         stmt = stmt.order_by(
-            func.case((User.city == user.city, 0), else_=1)
+            case((User.city == user.city, 0), else_=1)
         )
 
     result = await db.execute(stmt)
