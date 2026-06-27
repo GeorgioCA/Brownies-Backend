@@ -330,6 +330,7 @@ class VerifyPaymentRequest(BaseModel):
     order_id: str
     payment_id: str
     signature: str
+    plan_id: Optional[int] = None
 
 
 # ── Admin ──
@@ -466,6 +467,42 @@ class AdminUserUpdateRequest(BaseModel):
     is_active: Optional[bool] = None
     is_premium: Optional[bool] = None
     photo_verified: Optional[bool] = None
+
+
+class AdminPlanOut(BaseModel):
+    id: int
+    name: str
+    price_paise: int
+    duration_days: int
+    is_active: bool
+    sort_order: int
+    model_config = {"from_attributes": True}
+
+
+class AdminPlanSaveRequest(BaseModel):
+    name: str
+    price_paise: int = 0
+    duration_days: int = 30
+    is_active: bool = True
+    sort_order: int = 0
+
+
+class AdminLimitsOut(BaseModel):
+    daily_likes_free: int
+    daily_super_likes_free: int
+    max_photos_per_user: int
+    max_photo_size_mb: int
+    max_voice_duration_seconds: int
+    family_share_expire_days: int
+
+
+class AdminLimitsUpdateRequest(BaseModel):
+    daily_likes_free: Optional[int] = None
+    daily_super_likes_free: Optional[int] = None
+    max_photos_per_user: Optional[int] = None
+    max_photo_size_mb: Optional[int] = None
+    max_voice_duration_seconds: Optional[int] = None
+    family_share_expire_days: Optional[int] = None
 
 
 # ── Common ──

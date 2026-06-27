@@ -10,13 +10,14 @@ from core.auth_deps import get_current_admin
 from core.exceptions import NotFoundException, ValidationException
 from models import (
     User, UserPhoto, UserLanguage, VoicePrompt, Match, Swipe, Message,
-    BlockReport, Notification, Subscription,
+    BlockReport, Notification, Subscription, Plan, AppSetting,
 )
 from schemas import (
     AdminDashboardOut, AdminReportOut, AdminHandleReportRequest,
     AdminUserOut, AdminUserDetailOut, AdminPhotoOut, AdminVoicePromptOut,
     AdminSubscriptionOut, AdminChatOut, AdminMessageOut,
-    AdminUserUpdateRequest, SuccessResponse,
+    AdminUserUpdateRequest, AdminPlanOut, AdminPlanSaveRequest,
+    AdminLimitsOut, AdminLimitsUpdateRequest, SuccessResponse,
 )
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin"])
@@ -360,6 +361,140 @@ async def get_chat_messages(
         )
         for row in rows
     ]
+
+
+# ── Plans ──
+
+@router.get("/plans", response_model=list[AdminPlanOut])
+async def get_plans(
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Plan).order_by(Plan.sort_order))
+    return [AdminPlanOut.model_validate(p) for p in result.scalars().all()]
+
+
+@router.post("/plans", response_model=AdminPlanOut)
+async def create_plan(
+    req: AdminPlanSaveRequest,
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    plan = Plan(
+        name=req.name,
+        price_paise=req.price_paise,
+        duration_days=req.duration_days,
+        is_active=req.is_active,
+        sort_order=req.sort_order,
+    )
+    db.add(plan)
+    await db.flush()
+    return AdminPlanOut.model_validate(plan)
+
+
+@router.put("/plans/{plan_id}", response_model=AdminPlanOut)
+async def update_plan(
+    plan_id: int,
+    req: AdminPlanSaveRequest,
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Plan).where(Plan.id == plan_id))
+    plan = result.scalar_one_or_none()
+    if not plan:
+        raise NotFoundException("Plan not found")
+    plan.name = req.name
+    plan.price_paise = req.price_paise
+    plan.duration_days = req.duration_days
+    plan.is_active = req.is_active
+    plan.sort_order = req.sort_order
+    await db.flush()
+    return AdminPlanOut.model_validate(plan)
+
+
+@router.delete("/plans/{plan_id}")
+async def delete_plan(
+    plan_id: int,
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Plan).where(Plan.id == plan_id))
+    plan = result.scalar_one_or_none()
+    if not plan:
+        raise NotFoundException("Plan not found")
+    await db.delete(plan)
+    await db.flush()
+    return SuccessResponse(message="Plan deleted")
+
+
+# ── Limits ──
+
+@router.get("/limits", response_model=AdminLimitsOut)
+async def get_limits(
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(AppSetting))
+    stored = {s.key: s.value for s in result.scalars().all()}
+    return AdminLimitsOut(
+        daily_likes_free=int(stored.get("daily_likes_free", settings.DAILY_LIKES_FREE)),
+        daily_super_likes_free=int(stored.get("daily_super_likes_free", settings.DAILY_SUPER_LIKES_FREE)),
+        max_photos_per_user=int(stored.get("max_photos_per_user", settings.MAX_PHOTOS_PER_USER)),
+        max_photo_size_mb=int(stored.get("max_photo_size_mb", settings.MAX_PHOTO_SIZE_MB)),
+        max_voice_duration_seconds=int(stored.get("max_voice_duration_seconds", settings.MAX_VOICE_DURATION_SECONDS)),
+        family_share_expire_days=int(stored.get("family_share_expire_days", settings.FAMILY_SHARE_EXPIRE_DAYS)),
+    )
+
+
+@router.put("/limits", response_model=AdminLimitsOut)
+async def update_limits(
+    req: AdminLimitsUpdateRequest,
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    updates = {
+        "daily_likes_free": req.daily_likes_free,
+        "daily_super_likes_free": req.daily_super_likes_free,
+        "max_photos_per_user": req.max_photos_per_user,
+        "max_photo_size_mb": req.max_photo_size_mb,
+        "max_voice_duration_seconds": req.max_voice_duration_seconds,
+        "family_share_expire_days": req.family_share_expire_days,
+    }
+    for key, val in updates.items():
+        if val is not None:
+            result = await db.execute(select(AppSetting).where(AppSetting.key == key))
+            existing = result.scalar_one_or_none()
+            if existing:
+                existing.value = str(val)
+            else:
+                db.add(AppSetting(key=key, value=str(val)))
+
+    await db.flush()
+
+    # Re-apply to runtime settings
+    result = await db.execute(select(AppSetting))
+    stored = {s.key: int(s.value) for s in result.scalars().all()}
+    if "daily_likes_free" in stored:
+        settings.DAILY_LIKES_FREE = stored["daily_likes_free"]
+    if "daily_super_likes_free" in stored:
+        settings.DAILY_SUPER_LIKES_FREE = stored["daily_super_likes_free"]
+    if "max_photos_per_user" in stored:
+        settings.MAX_PHOTOS_PER_USER = stored["max_photos_per_user"]
+    if "max_photo_size_mb" in stored:
+        settings.MAX_PHOTO_SIZE_MB = stored["max_photo_size_mb"]
+    if "max_voice_duration_seconds" in stored:
+        settings.MAX_VOICE_DURATION_SECONDS = stored["max_voice_duration_seconds"]
+    if "family_share_expire_days" in stored:
+        settings.FAMILY_SHARE_EXPIRE_DAYS = stored["family_share_expire_days"]
+
+    return AdminLimitsOut(
+        daily_likes_free=settings.DAILY_LIKES_FREE,
+        daily_super_likes_free=settings.DAILY_SUPER_LIKES_FREE,
+        max_photos_per_user=settings.MAX_PHOTOS_PER_USER,
+        max_photo_size_mb=settings.MAX_PHOTO_SIZE_MB,
+        max_voice_duration_seconds=settings.MAX_VOICE_DURATION_SECONDS,
+        family_share_expire_days=settings.FAMILY_SHARE_EXPIRE_DAYS,
+    )
 
 
 @router.get("/reports", response_model=list[AdminReportOut])

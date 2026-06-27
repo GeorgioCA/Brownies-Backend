@@ -173,3 +173,19 @@ class Subscription(Base):
     starts_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     ends_at = Column(DateTime(timezone=True), nullable=False)
     is_active = Column(Boolean, default=True)
+
+
+class Plan(Base):
+    __tablename__ = "plans"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    price_paise = Column(Integer, nullable=False, default=0)
+    duration_days = Column(Integer, nullable=False, default=30)
+    is_active = Column(Boolean, default=True)
+    sort_order = Column(Integer, default=0)
+
+
+class AppSetting(Base):
+    __tablename__ = "app_settings"
+    key = Column(String, primary_key=True)
+    value = Column(Text, nullable=False)
