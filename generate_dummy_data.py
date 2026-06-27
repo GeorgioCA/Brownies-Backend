@@ -7,7 +7,7 @@ from sqlalchemy import select
 from core.database import async_session, init_db
 from core.security import hash_password
 from models import (
-    User, UserPreferences, Swipe, Match, Message,
+    User, UserPhoto, UserPreferences, Swipe, Match, Message,
     BlockReport, Subscription,
 )
 
@@ -89,6 +89,15 @@ async def generate():
             )
             db.add(u)
             users.append(u)
+            # Add photos after flush to get user.id
+            await db.flush()
+            for j in range(random.randint(1, 3)):
+                db.add(UserPhoto(
+                    user_id=u.id,
+                    photo_url=f"https://picsum.photos/seed/{u.name.replace(' ', '')}{j}/400/600",
+                    is_primary=(j == 0),
+                    sort_order=j,
+                ))
 
         # 10 female users
         for i in range(10):
@@ -112,6 +121,14 @@ async def generate():
             )
             db.add(u)
             users.append(u)
+            await db.flush()
+            for j in range(random.randint(1, 3)):
+                db.add(UserPhoto(
+                    user_id=u.id,
+                    photo_url=f"https://picsum.photos/seed/{u.name.replace(' ', '')}{j}/400/600",
+                    is_primary=(j == 0),
+                    sort_order=j,
+                ))
 
         await db.flush()
         user_ids = [u.id for u in users]
