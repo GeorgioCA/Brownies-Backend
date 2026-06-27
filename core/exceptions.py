@@ -1,8 +1,10 @@
-class AppException(Exception):
-    def __init__(self, status_code: int, detail: str, code: str = "error"):
-        self.status_code = status_code
-        self.detail = detail
+from starlette.exceptions import HTTPException
+
+
+class AppException(HTTPException):
+    def __init__(self, status_code: int, detail: str = "", code: str = "error", headers: dict = None):
         self.code = code
+        super().__init__(status_code=status_code, detail=detail, headers=headers)
 
 
 class AuthException(AppException):
@@ -32,8 +34,8 @@ class ValidationException(AppException):
 
 class RateLimitException(AppException):
     def __init__(self, detail: str = "Too many requests", retry_after: int = 60):
-        self.retry_after = retry_after
-        super().__init__(429, detail, "rate_limit")
+        headers = {"Retry-After": str(retry_after)}
+        super().__init__(429, detail, "rate_limit", headers=headers)
 
 
 class PaymentRequiredException(AppException):
