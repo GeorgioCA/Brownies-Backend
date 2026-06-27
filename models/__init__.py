@@ -28,14 +28,14 @@ class User(Base):
     profile_complete = Column(Boolean, default=False)
     is_premium = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
-    last_active = Column(DateTime, nullable=True)
+    last_active = Column(DateTime(timezone=True), nullable=True)
     location_lat = Column(Float, nullable=True)
     location_lng = Column(Float, nullable=True)
     preferred_language = Column(String, default="en")
     show_online_status = Column(Boolean, default=True)
     show_distance = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     photos = relationship("UserPhoto", back_populates="user", cascade="all, delete-orphan")
     languages = relationship("UserLanguage", back_populates="user", cascade="all, delete-orphan")
@@ -52,7 +52,7 @@ class UserPhoto(Base):
     photo_url = Column(String, nullable=False)
     is_primary = Column(Boolean, default=False)
     sort_order = Column(Integer, default=0)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     user = relationship("User", back_populates="photos")
 
 
@@ -71,7 +71,7 @@ class VoicePrompt(Base):
     prompt_question = Column(String, nullable=False)
     audio_url = Column(String, nullable=False)
     duration_seconds = Column(Integer, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     user = relationship("User", back_populates="voice_prompts")
 
 
@@ -94,7 +94,7 @@ class Swipe(Base):
     swiper_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     swiped_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     direction = Column(String, nullable=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     __table_args__ = (UniqueConstraint("swiper_id", "swiped_id", name="uq_swipe_pair"),)
     swiper = relationship("User", foreign_keys=[swiper_id], back_populates="swipes_made")
     swiped = relationship("User", foreign_keys=[swiped_id], back_populates="swipes_received")
@@ -105,7 +105,7 @@ class Match(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user1_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     user2_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    matched_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    matched_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     is_active = Column(Boolean, default=True)
     unmatched_by = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     __table_args__ = (
@@ -125,7 +125,7 @@ class Message(Base):
     message_type = Column(String, default="text")
     content = Column(Text, nullable=False)
     is_read = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     match = relationship("Match", back_populates="messages")
     sender = relationship("User")
 
@@ -137,7 +137,7 @@ class BlockReport(Base):
     reported_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     reason = Column(String, nullable=True)
     type = Column(String, nullable=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     __table_args__ = (UniqueConstraint("reporter_id", "reported_id", "type", name="uq_block_report"),)
 
 
@@ -150,7 +150,7 @@ class Notification(Base):
     body = Column(Text, nullable=True)
     is_read = Column(Boolean, default=False)
     related_user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
 
 class FamilyShare(Base):
@@ -161,8 +161,8 @@ class FamilyShare(Base):
     shared_with_email = Column(String, nullable=True)
     shared_with_phone = Column(String, nullable=True)
     access_token = Column(String, unique=True, nullable=False, index=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    expires_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    expires_at = Column(DateTime(timezone=True), nullable=True)
 
 
 class Subscription(Base):
@@ -170,6 +170,6 @@ class Subscription(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     plan_type = Column(String, nullable=False)
-    starts_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    ends_at = Column(DateTime, nullable=False)
+    starts_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    ends_at = Column(DateTime(timezone=True), nullable=False)
     is_active = Column(Boolean, default=True)
