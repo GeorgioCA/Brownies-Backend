@@ -64,7 +64,7 @@ app.include_router(verification.router)
 app.include_router(preferences.router)
 app.include_router(subscriptions.router)
 app.include_router(admin.router)
-app.include_router(ws_router)
+app.include_router(ws_router, prefix=settings.API_V1_PREFIX)
 
 # Static file serving for uploads
 import os

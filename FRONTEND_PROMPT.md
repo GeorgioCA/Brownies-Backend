@@ -141,7 +141,7 @@ GET /profile/{user_id} → UserProfileOut
 
 ### Get Card Stack
 ```
-GET /discovery/discovery?page=1&per_page=20
+GET /discovery?page=1&per_page=20
 Response: list[DiscoveryProfileOut]
 ```
 - Returns users matching the current user's preferences (age, gender, distance, etc.)

@@ -15,7 +15,7 @@ from schemas import (
     SwipeRequest, SwipeStatsOut, SuccessResponse,
 )
 
-router = APIRouter(prefix=f"{settings.API_V1_PREFIX}", tags=["discovery"])
+router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/discovery", tags=["discovery"])
 
 
 def _discovery_out(user: User, current_user: User) -> DiscoveryProfileOut:
@@ -58,7 +58,7 @@ def _discovery_out(user: User, current_user: User) -> DiscoveryProfileOut:
     )
 
 
-@router.get("/discovery", response_model=list[DiscoveryProfileOut])
+@router.get("", response_model=list[DiscoveryProfileOut])
 async def get_discovery(
     per_page: int = Query(default=20, ge=1, le=100),
     user: User = Depends(get_current_user),

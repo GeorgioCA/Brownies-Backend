@@ -12,7 +12,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.clients: dict[str, list[datetime]] = defaultdict(list)
 
     async def dispatch(self, request: Request, call_next):
-        if request.url.path.startswith("/ws") or request.url.path.startswith("/api/v1/uploads"):
+        if "/ws" in request.url.path or request.url.path.startswith("/api/v1/uploads"):
             return await call_next(request)
 
         client_ip = request.client.host if request.client else "unknown"
