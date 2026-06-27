@@ -12,4 +12,4 @@ websockets
 twilio
 httpx
 aiohttp
-aiosqlite
+asyncpg

@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = "/api/v1"
     DEBUG: bool = True
 
-    DATABASE_URL: str = "sqlite+aiosqlite:///./data/brownies.db"
+    DATABASE_URL: str = "postgresql+asyncpg://brownies:brownies@localhost:5432/brownies"
     DATABASE_ECHO: bool = False
 
     JWT_SECRET: str = "brownies-dev-secret-replace-in-production"
