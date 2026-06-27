@@ -173,8 +173,9 @@ async def generate():
         matches_list = []
         for swiper_id, swiped_set in like_map.items():
             for swiped_id in swiped_set:
-                if swiper_id < swiped_id and swiped_set_other := like_map.get(swiped_id):
-                    if swiper_id in swiped_set_other:
+                if swiper_id < swiped_id:
+                    swiped_set_other = like_map.get(swiped_id)
+                    if swiped_set_other and swiper_id in swiped_set_other:
                         m = Match(
                             user1_id=swiper_id,
                             user2_id=swiped_id,
