@@ -452,6 +452,16 @@ class AdminChatOut(BaseModel):
     last_message_at: Optional[datetime] = None
 
 
+class AdminMessageOut(BaseModel):
+    id: int
+    sender_id: int
+    sender_name: str
+    message_type: str
+    content: str
+    is_read: bool
+    created_at: datetime
+
+
 class AdminUserUpdateRequest(BaseModel):
     is_active: Optional[bool] = None
     is_premium: Optional[bool] = None

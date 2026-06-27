@@ -15,7 +15,8 @@ from models import (
 from schemas import (
     AdminDashboardOut, AdminReportOut, AdminHandleReportRequest,
     AdminUserOut, AdminUserDetailOut, AdminPhotoOut, AdminVoicePromptOut,
-    AdminSubscriptionOut, AdminChatOut, AdminUserUpdateRequest, SuccessResponse,
+    AdminSubscriptionOut, AdminChatOut, AdminMessageOut,
+    AdminUserUpdateRequest, SuccessResponse,
 )
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin"])
@@ -322,6 +323,40 @@ async def get_chats(
             message_count=row.message_count,
             last_message=row.last_message,
             last_message_at=row.last_message_at,
+        )
+        for row in rows
+    ]
+
+
+@router.get("/chats/{match_id}/messages", response_model=list[AdminMessageOut])
+async def get_chat_messages(
+    match_id: int,
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Match).where(Match.id == match_id))
+    if not result.scalar_one_or_none():
+        raise NotFoundException("Match not found")
+
+    stmt = (
+        select(Message.id, Message.sender_id, User.name.label("sender_name"),
+               Message.message_type, Message.content, Message.is_read, Message.created_at)
+        .join(User, User.id == Message.sender_id)
+        .where(Message.match_id == match_id)
+        .order_by(Message.created_at.asc())
+    )
+    result = await db.execute(stmt)
+    rows = result.all()
+
+    return [
+        AdminMessageOut(
+            id=row.id,
+            sender_id=row.sender_id,
+            sender_name=row.sender_name,
+            message_type=row.message_type,
+            content=row.content,
+            is_read=row.is_read,
+            created_at=row.created_at,
         )
         for row in rows
     ]
