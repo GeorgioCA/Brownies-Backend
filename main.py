@@ -2,11 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
+from pathlib import Path
 
-from .core.config import settings
-from .core.database import init_db
-from .routers import auth, profile, discovery, matches, notifications, reports, family, verification, preferences, subscriptions, admin
-from .websocket.handler import router as ws_router
+from core.config import settings
+from core.database import init_db
+from routers import auth, profile, discovery, matches, notifications, reports, family, verification, preferences, subscriptions, admin
+from websocket.handler import router as ws_router
 
 
 @asynccontextmanager
@@ -50,6 +51,11 @@ upload_dir.mkdir(parents=True, exist_ok=True)
 (upload_dir / "voice").mkdir(parents=True, exist_ok=True)
 (upload_dir / "verification").mkdir(parents=True, exist_ok=True)
 app.mount("/api/v1/uploads", StaticFiles(directory=str(upload_dir)), name="uploads")
+
+# Admin dashboard static files
+static_dir = Path("static")
+static_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/admin", StaticFiles(directory="static/admin", html=True), name="admin")
 
 
 @app.get("/api/v1/health")

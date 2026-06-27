@@ -339,12 +339,18 @@ class AdminDashboardOut(BaseModel):
     active_users_today: int
     matches_today: int
     reports_pending: int
+    premium_users: int = 0
+    total_photos: int = 0
+    total_swipes: int = 0
+    total_messages: int = 0
 
 
 class AdminReportOut(BaseModel):
     id: int
     reporter_id: int
     reported_id: int
+    reporter_name: str = ""
+    reported_name: str = ""
     reason: Optional[str] = None
     created_at: datetime
     model_config = {"from_attributes": True}
@@ -359,10 +365,84 @@ class AdminUserOut(BaseModel):
     name: str
     phone_number: str
     city: str
+    gender: str = ""
     is_active: bool
     is_premium: bool
+    phone_verified: bool = False
+    photo_verified: bool = False
+    profile_complete: bool = False
     created_at: datetime
     model_config = {"from_attributes": True}
+
+
+class AdminUserDetailOut(BaseModel):
+    id: int
+    name: str
+    phone_number: str
+    email: Optional[str] = None
+    date_of_birth: str = ""
+    gender: str = ""
+    bio: Optional[str] = None
+    intent: str = ""
+    city: str = ""
+    college: Optional[str] = None
+    workplace: Optional[str] = None
+    height_cm: Optional[int] = None
+    religion: Optional[str] = None
+    education: Optional[str] = None
+    occupation: Optional[str] = None
+    phone_verified: bool = False
+    photo_verified: bool = False
+    profile_complete: bool = False
+    is_premium: bool = False
+    is_active: bool = True
+    location_lat: Optional[float] = None
+    location_lng: Optional[float] = None
+    preferred_language: str = "en"
+    last_active: Optional[datetime] = None
+    created_at: Optional[datetime] = None
+    photos: list[UserPhotoOut] = []
+    languages: list[UserLanguageOut] = []
+    voice_prompts: list[VoicePromptOut] = []
+    model_config = {"from_attributes": True}
+
+
+class AdminPhotoOut(BaseModel):
+    id: int
+    user_id: int
+    user_name: str = ""
+    photo_url: str
+    is_primary: bool = False
+    created_at: Optional[datetime] = None
+    model_config = {"from_attributes": True}
+
+
+class AdminVoicePromptOut(BaseModel):
+    id: int
+    user_id: int
+    user_name: str = ""
+    prompt_question: str
+    audio_url: str
+    duration_seconds: Optional[int] = None
+    created_at: Optional[datetime] = None
+    model_config = {"from_attributes": True}
+
+
+class AdminSubscriptionOut(BaseModel):
+    id: int
+    user_id: int
+    user_name: str = ""
+    plan_type: str
+    starts_at: datetime
+    ends_at: datetime
+    is_active: bool
+    model_config = {"from_attributes": True}
+
+
+class AdminUserUpdateRequest(BaseModel):
+    is_active: Optional[bool] = None
+    is_premium: Optional[bool] = None
+    photo_verified: Optional[bool] = None
 
 
 # ── Common ──

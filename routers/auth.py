@@ -2,17 +2,17 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..core.config import settings
-from ..core.database import get_db
-from ..core.security import (
+from core.config import settings
+from core.database import get_db
+from core.security import (
     generate_otp, store_otp, verify_otp, check_otp_rate_limit,
     hash_password, verify_password, create_access_token, create_refresh_token,
     decode_token,
 )
-from ..core.exceptions import AuthException, ConflictException, RateLimitException
-from ..core.auth_deps import get_current_user
-from ..models import User
-from ..schemas import (
+from core.exceptions import AuthException, ConflictException, RateLimitException
+from core.auth_deps import get_current_user
+from models import User
+from schemas import (
     SendOtpRequest, VerifyOtpRequest, SetPasswordRequest, LoginRequest,
     RefreshTokenRequest, TokenResponse, SuccessResponse,
 )
@@ -44,7 +44,7 @@ async def send_otp(req: SendOtpRequest):
 async def verify_otp_endpoint(req: VerifyOtpRequest, db: AsyncSession = Depends(get_db)):
     phone = req.phone_number.strip()
     if not verify_otp(phone, req.otp):
-        from ..core.exceptions import ValidationException
+        from core.exceptions import ValidationException
         raise ValidationException("Invalid or expired OTP")
 
     result = await db.execute(select(User).where(User.phone_number == phone))

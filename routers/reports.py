@@ -2,12 +2,12 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..core.config import settings
-from ..core.database import get_db
-from ..core.auth_deps import get_current_user
-from ..core.exceptions import NotFoundException, ValidationException
-from ..models import User, Match, BlockReport, Notification
-from ..schemas import ReportRequest, BlockedUserOut, SuccessResponse
+from core.config import settings
+from core.database import get_db
+from core.auth_deps import get_current_user
+from core.exceptions import NotFoundException, ValidationException
+from models import User, Match, BlockReport, Notification
+from schemas import ReportRequest, BlockedUserOut, SuccessResponse
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}", tags=["reports"])
 

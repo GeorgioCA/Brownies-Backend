@@ -3,12 +3,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..core.config import settings
-from ..core.database import get_db
-from ..core.auth_deps import get_current_user
-from ..core.exceptions import NotFoundException
-from ..models import Subscription
-from ..schemas import SubscriptionOut, SubscriptionOrderOut, VerifyPaymentRequest, SuccessResponse
+from core.config import settings
+from core.database import get_db
+from core.auth_deps import get_current_user
+from core.exceptions import NotFoundException
+from models import Subscription
+from schemas import SubscriptionOut, SubscriptionOrderOut, VerifyPaymentRequest, SuccessResponse
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/subscriptions", tags=["subscriptions"])
 
@@ -48,7 +48,7 @@ async def create_order(
 ):
     plan = next((p for p in PLANS if p["id"] == plan_id), None)
     if not plan or plan["price"] == 0:
-        from ..core.exceptions import ValidationException
+        from core.exceptions import ValidationException
         raise ValidationException("Invalid plan")
 
     order_id = f"order_{user.id}_{datetime.now(timezone.utc).timestamp():.0f}"

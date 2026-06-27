@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..core.config import settings
-from ..core.database import get_db
-from ..core.auth_deps import get_current_user
-from ..core.exceptions import NotFoundException, ForbiddenException
-from ..models import User, UserPhoto, VoicePrompt, FamilyShare, Match
-from ..schemas import (
+from core.config import settings
+from core.database import get_db
+from core.auth_deps import get_current_user
+from core.exceptions import NotFoundException, ForbiddenException
+from models import User, UserPhoto, VoicePrompt, FamilyShare, Match
+from schemas import (
     FamilyShareRequest, FamilyShareOut,
     SharedProfileOut, UserPhotoOut, VoicePromptOut,
     SuccessResponse,

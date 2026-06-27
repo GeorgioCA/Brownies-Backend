@@ -4,10 +4,10 @@ from pathlib import Path
 import shutil
 import uuid
 
-from ..core.config import settings
-from ..core.database import get_db
-from ..core.auth_deps import get_current_user
-from ..schemas import VerificationStatusOut, SuccessResponse
+from core.config import settings
+from core.database import get_db
+from core.auth_deps import get_current_user
+from schemas import VerificationStatusOut, SuccessResponse
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/verification", tags=["verification"])
 
@@ -22,7 +22,7 @@ async def verification_status(user=Depends(get_current_user)):
 
 @router.post("/phone/send-otp")
 async def send_phone_verification_otp(user=Depends(get_current_user)):
-    from ..core.security import generate_otp, store_otp
+    from core.security import generate_otp, store_otp
     otp = generate_otp()
     store_otp(user.phone_number, otp)
     return {"success": True, "expires_in_seconds": settings.OTP_EXPIRE_SECONDS, "otp": otp}
@@ -30,11 +30,11 @@ async def send_phone_verification_otp(user=Depends(get_current_user)):
 
 @router.post("/phone/verify")
 async def verify_phone(otp: str, user=Depends(get_current_user)):
-    from ..core.security import verify_otp
+    from core.security import verify_otp
     if verify_otp(user.phone_number, otp):
         user.phone_verified = True
         return SuccessResponse(message="Phone verified")
-    from ..core.exceptions import ValidationException
+    from core.exceptions import ValidationException
     raise ValidationException("Invalid OTP")
 
 

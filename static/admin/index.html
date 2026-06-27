@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brownies — Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'] },
+      colors: {
+        brown: {
+          50:  '#fcf8f3', 100: '#f5ebe1', 200: '#ebd9c8', 300: '#d9b99e',
+          400: '#c49a78', 500: '#a8774f', 600: '#8b5a3c', 700: '#6b3f2e',
+          800: '#4a2c20', 900: '#2d1810',
+        },
+        gold:   { DEFAULT: '#d4a358', light: '#f0d6a8' },
+        rose:   { DEFAULT: '#e8736a', dark: '#c94d44' },
+        cream:  '#fff8f0',
+      },
+      boxShadow: {
+        'card': '0 4px 24px rgba(45,24,16,0.08)',
+        'card-lg': '0 12px 48px rgba(45,24,16,0.12)',
+        'btn': '0 4px 16px rgba(74,44,32,0.3)',
+      },
+      borderRadius: { card: '20px', btn: '60px' },
+    }
+  }
+}
+</script>
+</head>
+<body class="bg-brown-50 font-sans text-brown-900 min-h-screen">
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="min-h-screen flex items-center justify-center bg-brown-50">
+  <div class="bg-white rounded-card shadow-card p-10 w-full max-w-md">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-extrabold text-brown-800">Brownies</h1>
+      <p class="text-brown-500 text-sm font-semibold tracking-widest uppercase mt-1">Admin Panel</p>
+    </div>
+    <div id="loginError" class="hidden bg-rose-50 text-rose border border-rose/20 rounded-lg px-4 py-3 text-sm mb-4"></div>
+    <form onsubmit="doLogin(event)" class="space-y-4">
+      <div>
+        <label class="block text-sm font-semibold text-brown-700 mb-1">Phone Number</label>
+        <input id="loginPhone" type="text" placeholder="+1234567890" required
+          class="w-full px-4 py-3 border border-brown-200 rounded-xl text-brown-900 placeholder:text-brown-300 focus:outline-none focus:border-brown-500 focus:ring-2 focus:ring-brown-100 transition">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-brown-700 mb-1">Password</label>
+        <input id="loginPass" type="password" placeholder="••••••" required
+          class="w-full px-4 py-3 border border-brown-200 rounded-xl text-brown-900 placeholder:text-brown-300 focus:outline-none focus:border-brown-500 focus:ring-2 focus:ring-brown-100 transition">
+      </div>
+      <button type="submit"
+        class="w-full py-3 px-8 rounded-btn font-semibold text-white bg-gradient-to-br from-brown-700 to-brown-800 shadow-btn hover:-translate-y-0.5 hover:shadow-card-lg transition-all duration-300">
+        Sign In
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- DASHBOARD (hidden initially) -->
+<div id="dashboard" class="hidden flex min-h-screen">
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-white border-r border-brown-200 flex flex-col flex-shrink-0">
+    <div class="p-6 border-b border-brown-200">
+      <h1 class="text-xl font-extrabold text-brown-800">Brownies</h1>
+      <p class="text-brown-400 text-xs font-semibold tracking-widest uppercase">Admin</p>
+    </div>
+    <nav class="flex-1 p-4 space-y-1 overflow-y-auto" id="sidebarNav">
+      <button onclick="showTab('dashboard')" data-tab="dashboard" class="sidebar-link w-full text-left px-4 py-3 rounded-xl font-semibold text-sm text-brown-600 hover:bg-brown-100 hover:text-brown-800 transition flex items-center gap-3 active">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </button>
+      <button onclick="showTab('users')" data-tab="users" class="sidebar-link w-full text-left px-4 py-3 rounded-xl font-semibold text-sm text-brown-600 hover:bg-brown-100 hover:text-brown-800 transition flex items-center gap-3">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg>
+        Users
+      </button>
+      <button onclick="showTab('photos')" data-tab="photos" class="sidebar-link w-full text-left px-4 py-3 rounded-xl font-semibold text-sm text-brown-600 hover:bg-brown-100 hover:text-brown-800 transition flex items-center gap-3">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+        Photos
+      </button>
+      <button onclick="showTab('voice')" data-tab="voice" class="sidebar-link w-full text-left px-4 py-3 rounded-xl font-semibold text-sm text-brown-600 hover:bg-brown-100 hover:text-brown-800 transition flex items-center gap-3">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+        Voice Prompts
+      </button>
+      <button onclick="showTab('reports')" data-tab="reports" class="sidebar-link w-full text-left px-4 py-3 rounded-xl font-semibold text-sm text-brown-600 hover:bg-brown-100 hover:text-brown-800 transition flex items-center gap-3">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Reports
+      </button>
+      <button onclick="showTab('subscriptions')" data-tab="subscriptions" class="sidebar-link w-full text-left px-4 py-3 rounded-xl font-semibold text-sm text-brown-600 hover:bg-brown-100 hover:text-brown-800 transition flex items-center gap-3">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Subscriptions
+      </button>
+      <button onclick="showTab('stats')" data-tab="stats" class="sidebar-link w-full text-left px-4 py-3 rounded-xl font-semibold text-sm text-brown-600 hover:bg-brown-100 hover:text-brown-800 transition flex items-center gap-3">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Stats
+      </button>
+    </nav>
+    <div class="p-4 border-t border-brown-200">
+      <button onclick="logout()" class="w-full text-left px-4 py-3 rounded-xl font-semibold text-sm text-rose hover:bg-rose-50 transition flex items-center gap-3">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 overflow-y-auto p-8">
+    <div class="max-w-7xl mx-auto space-y-8">
+
+      <!-- DASHBOARD TAB -->
+      <div id="tab-dashboard">
+        <h2 class="text-2xl font-extrabold text-brown-900 mb-6">Dashboard Overview</h2>
+        <div id="statsGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8"></div>
+        <div class="bg-white rounded-card shadow-card p-6 border border-brown-200">
+          <h3 class="text-lg font-bold text-brown-800 mb-3">Quick Stats</h3>
+          <div id="quickStats" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-brown-600"></div>
+        </div>
+      </div>
+
+      <!-- USERS TAB -->
+      <div id="tab-users" class="hidden">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <h2 class="text-2xl font-extrabold text-brown-900">Users</h2>
+          <div class="flex gap-3">
+            <input id="userSearch" type="text" placeholder="Search name, phone, city..." oninput="loadUsers()"
+              class="px-4 py-2.5 border border-brown-200 rounded-xl text-sm w-64 placeholder:text-brown-300 focus:outline-none focus:border-brown-500 transition">
+            <button onclick="loadUsers()" class="px-6 py-2.5 rounded-btn font-semibold text-sm text-white bg-gradient-to-br from-brown-700 to-brown-800 shadow-btn hover:-translate-y-0.5 transition-all duration-300">
+              Search
+            </button>
+          </div>
+        </div>
+        <div class="bg-white rounded-card shadow-card border border-brown-200 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-brown-50 text-brown-600 font-semibold text-xs uppercase tracking-wider">
+                <tr>
+                  <th class="px-5 py-3 text-left">ID</th><th class="px-5 py-3 text-left">Name</th>
+                  <th class="px-5 py-3 text-left">Phone</th><th class="px-5 py-3 text-left">City</th>
+                  <th class="px-5 py-3 text-center">Gender</th><th class="px-5 py-3 text-center">Status</th>
+                  <th class="px-5 py-3 text-center">Premium</th><th class="px-5 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody" class="divide-y divide-brown-100"></tbody>
+            </table>
+          </div>
+          <div id="usersPagination" class="px-5 py-3 flex items-center justify-between border-t border-brown-100"></div>
+        </div>
+      </div>
+
+      <!-- PHOTOS TAB -->
+      <div id="tab-photos" class="hidden">
+        <h2 class="text-2xl font-extrabold text-brown-900 mb-6">Photos</h2>
+        <div class="bg-white rounded-card shadow-card border border-brown-200 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-brown-50 text-brown-600 font-semibold text-xs uppercase tracking-wider">
+                <tr>
+                  <th class="px-5 py-3 text-left">ID</th><th class="px-5 py-3 text-left">User</th>
+                  <th class="px-5 py-3 text-left">Photo</th><th class="px-5 py-3 text-center">Primary</th>
+                  <th class="px-5 py-3 text-left">Date</th><th class="px-5 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="photosTableBody" class="divide-y divide-brown-100"></tbody>
+            </table>
+          </div>
+          <div id="photosPagination" class="px-5 py-3 flex items-center justify-between border-t border-brown-100"></div>
+        </div>
+      </div>
+
+      <!-- VOICE PROMPTS TAB -->
+      <div id="tab-voice" class="hidden">
+        <h2 class="text-2xl font-extrabold text-brown-900 mb-6">Voice Prompts</h2>
+        <div class="bg-white rounded-card shadow-card border border-brown-200 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-brown-50 text-brown-600 font-semibold text-xs uppercase tracking-wider">
+                <tr>
+                  <th class="px-5 py-3 text-left">ID</th><th class="px-5 py-3 text-left">User</th>
+                  <th class="px-5 py-3 text-left">Prompt</th><th class="px-5 py-3 text-center">Duration</th>
+                  <th class="px-5 py-3 text-left">Date</th><th class="px-5 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="voiceTableBody" class="divide-y divide-brown-100"></tbody>
+            </table>
+          </div>
+          <div id="voicePagination" class="px-5 py-3 flex items-center justify-between border-t border-brown-100"></div>
+        </div>
+      </div>
+
+      <!-- REPORTS TAB -->
+      <div id="tab-reports" class="hidden">
+        <h2 class="text-2xl font-extrabold text-brown-900 mb-6">Reports</h2>
+        <div class="bg-white rounded-card shadow-card border border-brown-200 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-brown-50 text-brown-600 font-semibold text-xs uppercase tracking-wider">
+                <tr>
+                  <th class="px-5 py-3 text-left">ID</th><th class="px-5 py-3 text-left">Reporter</th>
+                  <th class="px-5 py-3 text-left">Reported</th><th class="px-5 py-3 text-left">Reason</th>
+                  <th class="px-5 py-3 text-left">Date</th><th class="px-5 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="reportsTableBody" class="divide-y divide-brown-100"></tbody>
+            </table>
+          </div>
+          <div id="reportsPagination" class="px-5 py-3 flex items-center justify-between border-t border-brown-100"></div>
+        </div>
+      </div>
+
+      <!-- SUBSCRIPTIONS TAB -->
+      <div id="tab-subscriptions" class="hidden">
+        <h2 class="text-2xl font-extrabold text-brown-900 mb-6">Subscriptions</h2>
+        <div class="bg-white rounded-card shadow-card border border-brown-200 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-brown-50 text-brown-600 font-semibold text-xs uppercase tracking-wider">
+                <tr>
+                  <th class="px-5 py-3 text-left">ID</th><th class="px-5 py-3 text-left">User</th>
+                  <th class="px-5 py-3 text-center">Plan</th><th class="px-5 py-3 text-center">Active</th>
+                  <th class="px-5 py-3 text-left">Starts</th><th class="px-5 py-3 text-left">Ends</th>
+                </tr>
+              </thead>
+              <tbody id="subsTableBody" class="divide-y divide-brown-100"></tbody>
+            </table>
+          </div>
+          <div id="subsPagination" class="px-5 py-3 flex items-center justify-between border-t border-brown-100"></div>
+        </div>
+      </div>
+
+      <!-- STATS TAB -->
+      <div id="tab-stats" class="hidden">
+        <h2 class="text-2xl font-extrabold text-brown-900 mb-6">Statistics</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white rounded-card shadow-card p-6 border border-brown-200">
+            <h3 class="text-lg font-bold text-brown-800 mb-4">Gender Distribution</h3>
+            <div id="genderStats" class="space-y-3"></div>
+          </div>
+          <div class="bg-white rounded-card shadow-card p-6 border border-brown-200">
+            <h3 class="text-lg font-bold text-brown-800 mb-4">Top Cities</h3>
+            <div id="cityStats" class="space-y-2"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- USER DETAIL MODAL -->
+<div id="userModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-brown-900/50 backdrop-blur-sm p-4">
+  <div class="bg-white rounded-card shadow-card-lg w-full max-w-2xl max-h-[85vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white border-b border-brown-200 px-6 py-4 flex items-center justify-between rounded-t-card">
+      <h3 class="text-lg font-bold text-brown-800">User Detail</h3>
+      <button onclick="closeUserModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-brown-100 text-brown-500 transition">&times;</button>
+    </div>
+    <div id="userModalContent" class="p-6 space-y-5"></div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+const API = '/api/v1';
+let token = localStorage.getItem('brownies_admin_token');
+let currentTab = 'dashboard';
+let userPage = 1, photoPage = 1, voicePage = 1, reportPage = 1, subPage = 1;
+
+// ── AUTH ──
+async function doLogin(e) {
+  e.preventDefault();
+  const phone = document.getElementById('loginPhone').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  const errEl = document.getElementById('loginError');
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone_number: phone, password: pass }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Login failed');
+    token = data.access_token;
+    localStorage.setItem('brownies_admin_token', token);
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    showTab('dashboard');
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+  }
+}
+
+function logout() {
+  localStorage.removeItem('brownies_admin_token');
+  token = null;
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+}
+
+async function api(path, opts = {}) {
+  const headers = { ...opts.headers, 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(`${API}${path}`, { ...opts, headers });
+  if (res.status === 401) { logout(); throw new Error('Session expired'); }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `Request failed (${res.status})`);
+  }
+  return res.json();
+}
+
+// ── NAVIGATION ──
+function showTab(name) {
+  currentTab = name;
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+  document.getElementById(`tab-${name}`).classList.remove('hidden');
+  document.querySelectorAll('.sidebar-link').forEach(btn => {
+    const isActive = btn.dataset.tab === name;
+    btn.classList.toggle('bg-brown-100', isActive);
+    btn.classList.toggle('text-brown-800', isActive);
+    btn.classList.toggle('text-brown-600', !isActive);
+  });
+  if (name === 'dashboard') loadDashboard();
+  else if (name === 'users') loadUsers();
+  else if (name === 'photos') loadPhotos();
+  else if (name === 'voice') loadVoicePrompts();
+  else if (name === 'reports') loadReports();
+  else if (name === 'subscriptions') loadSubscriptions();
+  else if (name === 'stats') loadStats();
+}
+
+// ── DASHBOARD ──
+async function loadDashboard() {
+  try {
+    const d = await api('/admin/dashboard');
+    const cards = [
+      { label: 'Total Users', value: d.total_users, color: 'text-brown-700', bg: 'bg-brown-100' },
+      { label: 'Active Today', value: d.active_users_today, color: 'text-green-600', bg: 'bg-green-100' },
+      { label: 'Matches Today', value: d.matches_today, color: 'text-gold', bg: 'bg-yellow-100' },
+      { label: 'Reports Pending', value: d.reports_pending, color: 'text-rose', bg: 'bg-rose-100' },
+    ];
+    document.getElementById('statsGrid').innerHTML = cards.map(c => `
+      <div class="bg-white rounded-card shadow-card p-6 border border-brown-200 hover:-translate-y-1 hover:shadow-card-lg transition-all duration-300">
+        <p class="text-xs font-semibold text-brown-400 uppercase tracking-wider mb-2">${c.label}</p>
+        <p class="text-3xl font-extrabold ${c.color}">${c.value}</p>
+      </div>
+    `).join('');
+
+    document.getElementById('quickStats').innerHTML = `
+      <div><span class="text-brown-400">Premium</span> <span class="font-bold text-brown-800 ml-2">${d.premium_users}</span></div>
+      <div><span class="text-brown-400">Photos</span> <span class="font-bold text-brown-800 ml-2">${d.total_photos}</span></div>
+      <div><span class="text-brown-400">Swipes</span> <span class="font-bold text-brown-800 ml-2">${d.total_swipes}</span></div>
+      <div><span class="text-brown-400">Messages</span> <span class="font-bold text-brown-800 ml-2">${d.total_messages}</span></div>
+    `;
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+// ── USERS ──
+async function loadUsers(page = 1) {
+  userPage = page;
+  try {
+    const search = document.getElementById('userSearch')?.value || '';
+    const params = new URLSearchParams({ page, per_page: 20 });
+    if (search) params.set('search', search);
+    const data = await api(`/admin/users?${params}`);
+    document.getElementById('usersTableBody').innerHTML = (data.length === 0)
+      ? '<tr><td colspan="8" class="px-5 py-12 text-center text-brown-400">No users found</td></tr>'
+      : data.map(u => `
+        <tr class="hover:bg-brown-50 transition">
+          <td class="px-5 py-3 font-mono text-brown-400">#${u.id}</td>
+          <td class="px-5 py-3 font-semibold text-brown-800">${esc(u.name)}</td>
+          <td class="px-5 py-3 text-brown-500">${esc(u.phone_number)}</td>
+          <td class="px-5 py-3 text-brown-600">${esc(u.city)}</td>
+          <td class="px-5 py-3 text-center text-brown-500 capitalize">${u.gender || '-'}</td>
+          <td class="px-5 py-3 text-center">
+            <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${u.is_active ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose'}">
+              ${u.is_active ? 'Active' : 'Inactive'}
+            </span>
+            ${u.phone_verified ? '<span class="ml-1 text-gold text-xs">&#10003;</span>' : ''}
+          </td>
+          <td class="px-5 py-3 text-center">
+            ${u.is_premium ? '<span class="text-gold font-bold text-xs">&#9733; PREMIUM</span>' : '<span class="text-brown-300 text-xs">Free</span>'}
+          </td>
+          <td class="px-5 py-3 text-right">
+            <button onclick="viewUser(${u.id})" class="px-3 py-1.5 text-xs font-semibold rounded-btn border border-brown-300 text-brown-600 hover:bg-brown-100 transition mr-1">View</button>
+            <button onclick="toggleUserActive(${u.id}, ${!u.is_active})" class="px-3 py-1.5 text-xs font-semibold rounded-btn border ${u.is_active ? 'border-rose text-rose hover:bg-rose-50' : 'border-green-500 text-green-600 hover:bg-green-50'} transition">${u.is_active ? 'Deactivate' : 'Activate'}</button>
+          </td>
+        </tr>
+      `).join('');
+    renderPagination('users', userPage, data.length >= 20);
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+async function viewUser(id) {
+  try {
+    const u = await api(`/admin/users/${id}`);
+    const content = document.getElementById('userModalContent');
+    content.innerHTML = `
+      <div class="flex flex-wrap gap-6">
+        <div class="flex-1 min-w-[200px] space-y-3">
+          <div><span class="text-xs text-brown-400 uppercase font-semibold">Name</span><p class="font-bold text-brown-800">${esc(u.name)}</p></div>
+          <div><span class="text-xs text-brown-400 uppercase font-semibold">Phone</span><p class="text-brown-600">${esc(u.phone_number)}</p></div>
+          <div><span class="text-xs text-brown-400 uppercase font-semibold">Email</span><p class="text-brown-600">${esc(u.email || '-')}</p></div>
+          <div><span class="text-xs text-brown-400 uppercase font-semibold">DOB</span><p class="text-brown-600">${u.date_of_birth || '-'}</p></div>
+          <div><span class="text-xs text-brown-400 uppercase font-semibold">Gender</span><p class="text-brown-600 capitalize">${u.gender || '-'}</p></div>
+          <div><span class="text-xs text-brown-400 uppercase font-semibold">Intent</span><p class="text-brown-600 capitalize">${(u.intent || '').replace(/_/g, ' ')}</p></div>
+        </div>
+        <div class="flex-1 min-w-[200px] space-y-3">
+          <div><span class="text-xs text-brown-400 uppercase font-semibold">City</span><p class="text-brown-600">${esc(u.city)}</p></div>
+          <div><span class="text-xs text-brown-400 uppercase font-semibold">College</span><p class="text-brown-600">${esc(u.college || '-')}</p></div>
+          <div><span class="text-xs text-brown-400 uppercase font-semibold">Workplace</span><p class="text-brown-600">${esc(u.workplace || '-')}</p></div>
+          <div><span class="text-xs text-brown-400 uppercase font-semibold">Education</span><p class="text-brown-600">${esc(u.education || '-')}</p></div>
+          <div><span class="text-xs text-brown-400 uppercase font-semibold">Height</span><p class="text-brown-600">${u.height_cm ? u.height_cm + ' cm' : '-'}</p></div>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-3 mt-2">
+        <span class="px-3 py-1 rounded-full text-xs font-semibold ${u.is_active ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose'}">${u.is_active ? 'Active' : 'Inactive'}</span>
+        <span class="px-3 py-1 rounded-full text-xs font-semibold ${u.is_premium ? 'bg-yellow-100 text-gold' : 'bg-brown-100 text-brown-500'}">${u.is_premium ? 'Premium' : 'Free'}</span>
+        <span class="px-3 py-1 rounded-full text-xs font-semibold ${u.phone_verified ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose'}">Phone: ${u.phone_verified ? 'Verified' : 'No'}</span>
+        <span class="px-3 py-1 rounded-full text-xs font-semibold ${u.photo_verified ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose'}">Photo: ${u.photo_verified ? 'Verified' : 'No'}</span>
+        <span class="px-3 py-1 rounded-full text-xs font-semibold ${u.profile_complete ? 'bg-green-100 text-green-700' : 'bg-brown-100 text-brown-500'}">Profile: ${u.profile_complete ? 'Complete' : 'Incomplete'}</span>
+      </div>
+      ${u.bio ? `<div class="mt-2"><span class="text-xs text-brown-400 uppercase font-semibold">Bio</span><p class="text-brown-600 italic mt-1">${esc(u.bio)}</p></div>` : ''}
+      ${u.photos.length ? `
+        <div><span class="text-xs text-brown-400 uppercase font-semibold">Photos (${u.photos.length})</span>
+          <div class="flex flex-wrap gap-2 mt-2">${u.photos.map(p => `
+            <img src="${p.photo_url}" alt="" class="w-20 h-20 object-cover rounded-xl border border-brown-200" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23ebd9c8%22><rect width=%2224%22 height=%2224%22 rx=%224%22/></svg>'">
+          `).join('')}</div>
+        </div>` : ''}
+      ${u.languages.length ? `<div><span class="text-xs text-brown-400 uppercase font-semibold">Languages</span><p class="text-brown-600">${u.languages.map(l => l.language).join(', ')}</p></div>` : ''}
+      <div class="flex gap-3 pt-3 border-t border-brown-200">
+        <button onclick="toggleUserActive(${u.id}, ${!u.is_active}); closeUserModal();" class="px-4 py-2 rounded-btn font-semibold text-sm ${u.is_active ? 'text-rose border border-rose hover:bg-rose-50' : 'text-green-600 border border-green-500 hover:bg-green-50'} transition">${u.is_active ? 'Deactivate' : 'Activate'}</button>
+        <button onclick="toggleUserPremium(${u.id}, ${!u.is_premium}); closeUserModal();" class="px-4 py-2 rounded-btn font-semibold text-sm border border-gold text-gold hover:bg-yellow-50 transition">${u.is_premium ? 'Remove Premium' : 'Make Premium'}</button>
+      </div>
+    `;
+    document.getElementById('userModal').classList.remove('hidden');
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+function closeUserModal() { document.getElementById('userModal').classList.add('hidden'); }
+document.getElementById('userModal')?.addEventListener('click', function(e) { if (e.target === this) closeUserModal(); });
+
+async function toggleUserActive(id, active) {
+  try {
+    await api(`/admin/users/${id}`, { method: 'PATCH', body: JSON.stringify({ is_active: active }) });
+    showToast(`User ${active ? 'activated' : 'deactivated'}`, 'success');
+    loadUsers(userPage);
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+async function toggleUserPremium(id, premium) {
+  try {
+    await api(`/admin/users/${id}`, { method: 'PATCH', body: JSON.stringify({ is_premium: premium }) });
+    showToast(`Premium ${premium ? 'granted' : 'removed'}`, 'success');
+    loadUsers(userPage);
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+// ── PHOTOS ──
+async function loadPhotos(page = 1) {
+  photoPage = page;
+  try {
+    const data = await api(`/admin/photos?page=${page}&per_page=30`);
+    document.getElementById('photosTableBody').innerHTML = (data.length === 0)
+      ? '<tr><td colspan="6" class="px-5 py-12 text-center text-brown-400">No photos found</td></tr>'
+      : data.map(p => `
+        <tr class="hover:bg-brown-50 transition">
+          <td class="px-5 py-3 font-mono text-brown-400">#${p.id}</td>
+          <td class="px-5 py-3 font-semibold text-brown-800">${esc(p.user_name)}</td>
+          <td class="px-5 py-3">
+            <img src="${p.photo_url}" alt="" class="w-12 h-12 object-cover rounded-lg border border-brown-200" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23ebd9c8%22><rect width=%2224%22 height=%2224%22 rx=%224%22/></svg>'">
+          </td>
+          <td class="px-5 py-3 text-center">${p.is_primary ? '<span class="text-gold font-bold">&#9733;</span>' : '-'}</td>
+          <td class="px-5 py-3 text-brown-500 text-xs">${fmtDate(p.created_at)}</td>
+          <td class="px-5 py-3 text-right">
+            <button onclick="deletePhoto(${p.id})" class="px-3 py-1.5 text-xs font-semibold rounded-btn border border-rose text-rose hover:bg-rose-50 transition">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    renderPagination('photos', photoPage, data.length >= 30);
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+async function deletePhoto(id) {
+  if (!confirm('Delete this photo?')) return;
+  try { await api(`/admin/photos/${id}`, { method: 'DELETE' }); showToast('Photo deleted', 'success'); loadPhotos(photoPage); }
+  catch (e) { showToast(e.message, 'error'); }
+}
+
+// ── VOICE PROMPTS ──
+async function loadVoicePrompts(page = 1) {
+  voicePage = page;
+  try {
+    const data = await api(`/admin/voice-prompts?page=${page}&per_page=30`);
+    document.getElementById('voiceTableBody').innerHTML = (data.length === 0)
+      ? '<tr><td colspan="6" class="px-5 py-12 text-center text-brown-400">No voice prompts found</td></tr>'
+      : data.map(v => `
+        <tr class="hover:bg-brown-50 transition">
+          <td class="px-5 py-3 font-mono text-brown-400">#${v.id}</td>
+          <td class="px-5 py-3 font-semibold text-brown-800">${esc(v.user_name)}</td>
+          <td class="px-5 py-3 text-brown-600">${esc(v.prompt_question)}</td>
+          <td class="px-5 py-3 text-center text-brown-500">${v.duration_seconds ? v.duration_seconds + 's' : '-'}</td>
+          <td class="px-5 py-3 text-brown-500 text-xs">${fmtDate(v.created_at)}</td>
+          <td class="px-5 py-3 text-right">
+            <audio controls class="h-8 w-32 inline mr-2"><source src="${v.audio_url}"></audio>
+            <button onclick="deleteVoicePrompt(${v.id})" class="px-3 py-1.5 text-xs font-semibold rounded-btn border border-rose text-rose hover:bg-rose-50 transition">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    renderPagination('voice', voicePage, data.length >= 30);
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+async function deleteVoicePrompt(id) {
+  if (!confirm('Delete this voice prompt?')) return;
+  try { await api(`/admin/voice-prompts/${id}`, { method: 'DELETE' }); showToast('Voice prompt deleted', 'success'); loadVoicePrompts(voicePage); }
+  catch (e) { showToast(e.message, 'error'); }
+}
+
+// ── REPORTS ──
+async function loadReports(page = 1) {
+  reportPage = page;
+  try {
+    const data = await api(`/admin/reports?page=${page}&per_page=20`);
+    document.getElementById('reportsTableBody').innerHTML = (data.length === 0)
+      ? '<tr><td colspan="6" class="px-5 py-12 text-center text-brown-400">No reports</td></tr>'
+      : data.map(r => `
+        <tr class="hover:bg-brown-50 transition">
+          <td class="px-5 py-3 font-mono text-brown-400">#${r.id}</td>
+          <td class="px-5 py-3 font-semibold text-brown-700">${esc(r.reporter_name)}</td>
+          <td class="px-5 py-3 font-semibold text-rose">${esc(r.reported_name)}</td>
+          <td class="px-5 py-3 text-brown-600 max-w-[200px] truncate">${esc(r.reason || '-')}</td>
+          <td class="px-5 py-3 text-brown-500 text-xs">${fmtDate(r.created_at)}</td>
+          <td class="px-5 py-3 text-right space-x-1">
+            <button onclick="handleReport(${r.id}, 'ban')" class="px-3 py-1.5 text-xs font-semibold rounded-btn border border-rose text-rose hover:bg-rose-50 transition">Ban</button>
+            <button onclick="handleReport(${r.id}, 'dismiss')" class="px-3 py-1.5 text-xs font-semibold rounded-btn border border-brown-300 text-brown-600 hover:bg-brown-100 transition">Dismiss</button>
+          </td>
+        </tr>
+      `).join('');
+    renderPagination('reports', reportPage, data.length >= 20);
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+async function handleReport(id, action) {
+  try {
+    await api(`/admin/reports/${id}/action`, { method: 'POST', body: JSON.stringify({ action }) });
+    showToast(action === 'ban' ? 'User banned' : 'Report dismissed', 'success');
+    loadReports(reportPage);
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+// ── SUBSCRIPTIONS ──
+async function loadSubscriptions(page = 1) {
+  subPage = page;
+  try {
+    const data = await api(`/admin/subscriptions?page=${page}&per_page=30`);
+    document.getElementById('subsTableBody').innerHTML = (data.length === 0)
+      ? '<tr><td colspan="6" class="px-5 py-12 text-center text-brown-400">No subscriptions found</td></tr>'
+      : data.map(s => `
+        <tr class="hover:bg-brown-50 transition">
+          <td class="px-5 py-3 font-mono text-brown-400">#${s.id}</td>
+          <td class="px-5 py-3 font-semibold text-brown-800">${esc(s.user_name)}</td>
+          <td class="px-5 py-3 text-center">
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${s.plan_type.includes('yearly') ? 'bg-yellow-100 text-gold' : 'bg-brown-100 text-brown-600'}">${s.plan_type.replace(/_/g, ' ')}</span>
+          </td>
+          <td class="px-5 py-3 text-center">${s.is_active ? '<span class="text-green-600 font-semibold text-xs">&#10003; Active</span>' : '<span class="text-brown-300 text-xs">Expired</span>'}</td>
+          <td class="px-5 py-3 text-brown-500 text-xs">${fmtDate(s.starts_at)}</td>
+          <td class="px-5 py-3 text-brown-500 text-xs">${fmtDate(s.ends_at)}</td>
+        </tr>
+      `).join('');
+    renderPagination('subs', subPage, data.length >= 30);
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+// ── STATS ──
+async function loadStats() {
+  try {
+    const [gender, cities] = await Promise.all([
+      api('/admin/stats/gender'),
+      api('/admin/stats/cities'),
+    ]);
+    const total = Object.values(gender).reduce((a, b) => a + b, 0) || 1;
+    document.getElementById('genderStats').innerHTML = Object.entries(gender).map(([g, c]) => `
+      <div class="flex items-center gap-3">
+        <span class="w-16 text-sm font-semibold text-brown-700 capitalize">${g}</span>
+        <div class="flex-1 bg-brown-100 rounded-full h-5 overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-brown-500 to-brown-600 rounded-full transition-all" style="width:${(c/total*100).toFixed(1)}%"></div>
+        </div>
+        <span class="text-sm font-bold text-brown-800 w-10 text-right">${c}</span>
+      </div>
+    `).join('');
+
+    const maxCity = Math.max(...cities.map(c => c.count), 1);
+    document.getElementById('cityStats').innerHTML = cities.slice(0, 15).map(c => `
+      <div class="flex items-center gap-3">
+        <span class="w-24 text-sm font-semibold text-brown-700 truncate">${esc(c.city)}</span>
+        <div class="flex-1 bg-brown-100 rounded-full h-4 overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-gold to-gold-light rounded-full" style="width:${(c.count/maxCity*100).toFixed(1)}%"></div>
+        </div>
+        <span class="text-sm font-bold text-brown-800 w-10 text-right">${c.count}</span>
+      </div>
+    `).join('');
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+// ── PAGINATION ──
+function renderPagination(prefix, page, hasMore) {
+  const el = document.getElementById(`${prefix}Pagination`);
+  if (!el) return;
+  const fnMap = { users: 'loadUsers', photos: 'loadPhotos', voice: 'loadVoicePrompts', reports: 'loadReports', subs: 'loadSubscriptions' };
+  el.innerHTML = `
+    <span class="text-sm text-brown-500">Page ${page}</span>
+    <div class="flex gap-2">
+      <button onclick="${fnMap[prefix]}(${page - 1})" ${page <= 1 ? 'disabled' : ''} class="px-4 py-1.5 rounded-btn text-sm font-semibold border border-brown-300 text-brown-600 hover:bg-brown-100 disabled:opacity-40 disabled:cursor-not-allowed transition">Prev</button>
+      <button onclick="${fnMap[prefix]}(${page + 1})" ${!hasMore ? 'disabled' : ''} class="px-4 py-1.5 rounded-btn text-sm font-semibold border border-brown-300 text-brown-600 hover:bg-brown-100 disabled:opacity-40 disabled:cursor-not-allowed transition">Next</button>
+    </div>
+  `;
+}
+
+// ── HELPERS ──
+function esc(str) { if (!str) return ''; const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+function fmtDate(d) { if (!d) return '-'; return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+
+function showToast(msg, type) {
+  const toast = document.createElement('div');
+  toast.className = `fixed bottom-6 right-6 px-5 py-3 rounded-xl shadow-card-lg text-sm font-semibold z-[100] animate-bounce transition-all ${type === 'error' ? 'bg-rose text-white' : 'bg-green-600 text-white'}`;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.remove(); }, 3000);
+}
+
+// ── INIT ──
+if (token) {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  showTab('dashboard');
+}
+</script>
+
+</body>
+</html>

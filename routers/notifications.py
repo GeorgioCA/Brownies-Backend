@@ -2,14 +2,14 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..core.config import settings
-from ..core.database import get_db
-from ..core.auth_deps import get_current_user
-from ..schemas import NotificationOut, SuccessResponse
+from core.config import settings
+from core.database import get_db
+from core.auth_deps import get_current_user
+from schemas import NotificationOut, SuccessResponse
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/notifications", tags=["notifications"])
 
-from ..models import Notification
+from models import Notification
 
 
 @router.get("", response_model=list[NotificationOut])

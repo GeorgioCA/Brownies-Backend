@@ -6,12 +6,12 @@ from pathlib import Path
 import shutil
 import uuid
 
-from ..core.config import settings
-from ..core.database import get_db
-from ..core.auth_deps import get_current_user, get_premium_user
-from ..core.exceptions import ValidationException, NotFoundException
-from ..models import User, UserPhoto, UserLanguage, VoicePrompt
-from ..schemas import (
+from core.config import settings
+from core.database import get_db
+from core.auth_deps import get_current_user, get_premium_user
+from core.exceptions import ValidationException, NotFoundException
+from models import User, UserPhoto, UserLanguage, VoicePrompt
+from schemas import (
     SetupProfileRequest, UpdateProfileRequest, UpdateLanguagesRequest,
     ReorderPhotosRequest, VoicePromptCreate,
     UserProfileOut, UserPhotoOut, UserLanguageOut, VoicePromptOut,

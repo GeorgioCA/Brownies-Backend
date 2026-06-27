@@ -8,7 +8,7 @@ active_connections: dict[int, WebSocket] = {}
 
 
 def get_user_id_from_token(token: str) -> Optional[int]:
-    from ..core.security import decode_token
+    from core.security import decode_token
     payload = decode_token(token)
     if payload:
         return int(payload.get("sub", 0))

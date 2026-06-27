@@ -3,13 +3,13 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..core.config import settings
-from ..core.database import get_db
-from ..core.auth_deps import get_current_user, get_premium_user
-from ..core.geo import haversine_distance
-from ..core.exceptions import ValidationException, NotFoundException, PaymentRequiredException
-from ..models import User, UserPhoto, UserLanguage, VoicePrompt, Swipe, Match, BlockReport, Notification
-from ..schemas import (
+from core.config import settings
+from core.database import get_db
+from core.auth_deps import get_current_user, get_premium_user
+from core.geo import haversine_distance
+from core.exceptions import ValidationException, NotFoundException, PaymentRequiredException
+from models import User, UserPhoto, UserLanguage, VoicePrompt, Swipe, Match, BlockReport, Notification
+from schemas import (
     DiscoveryProfileOut, UserPhotoOut, UserLanguageOut, VoicePromptOut,
     SwipeRequest, SwipeStatsOut, SuccessResponse,
 )

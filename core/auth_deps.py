@@ -4,10 +4,10 @@ from fastapi import Depends, Header
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .database import get_db
-from .security import decode_token
-from .exceptions import AuthException, ForbiddenException
-from ..models import User
+from core.database import get_db
+from core.security import decode_token
+from core.exceptions import AuthException, ForbiddenException
+from models import User
 
 
 async def get_current_user(
@@ -39,6 +39,6 @@ async def get_current_admin(user: User = Depends(get_current_user)) -> User:
 
 async def get_premium_user(user: User = Depends(get_current_user)) -> User:
     if not user.is_premium:
-        from .exceptions import PaymentRequiredException
+        from core.exceptions import PaymentRequiredException
         raise PaymentRequiredException()
     return user

@@ -1,0 +1,741 @@
+================================================================================
+BROWNIES — DESIGN SYSTEM & STYLE GUIDE
+================================================================================
+Extracted from production brownies.frontseatview.com CSS + adapted for Flutter
+
+================================================================================
+1. COLOR PALETTE
+================================================================================
+
+-- Brown Family (Primary)
+    brown-900:  #2d1810    -> Deepest (headings, footer BG)
+    brown-800:  #4a2c20    -> Dark (button hover, primary button BG)
+    brown-700:  #6b3f2e    -> Mid-dark (primary button, nav button, active tabs)
+    brown-600:  #8b5a3c    -> Mid (step gradient start)
+    brown-500:  #a8774f    -> Mid-light (section tags, links)
+    brown-400:  #c49a78    -> Light (gradient, input borders)
+    brown-300:  #d9b99e    -> Lighter (borders, outline button)
+    brown-200:  #ebd9c8    -> Very light (borders, dividers)
+    brown-100:  #f5ebe1    -> Tint (feature icon BG, hero badge, button hover)
+    brown-50:   #fcf8f3    -> Background (body BG, even section BG)
+
+-- Gold Family (Accent)
+    gold:       #d4a358    -> Primary accent (star, super like)
+    gold-light: #f0d6a8    -> Light accent (gradient highlights, CTA tags)
+
+-- Rose Family (Error / Cancellation)
+    rose:       #e8736a    -> Cancel, pass, nope
+    rose-dark:  #c94d44    -> Hover/pressed state
+
+-- Neutral Family
+    cream:      #fff8f0    -> Alternate background (hero section)
+    white:      #ffffff    -> Surface (cards, inputs, screens)
+    text:       #2d1810    -> Primary text (same as brown-900)
+    text-muted: #8b7a6e    -> Secondary / muted text
+    success:    #22c55e    -> Like/match green (action buttons, verified)
+    error:      #ef4444    -> Pass/block red (action buttons, error)
+
+================================================================================
+2. FUNCTIONAL COLOR MAPPING
+================================================================================
+
+    Primary:                    #6b3f2e  (brown-700)
+    Primary Dark:               #4a2c20  (brown-800)
+    Primary Light:              #f5ebe1  (brown-100)
+    Secondary (gold):           #d4a358  (gold)
+    Secondary Light:            #f0d6a8  (gold-light)
+
+    Background:                 #fcf8f3  (brown-50)
+    Surface (cards, dialogs):   #ffffff  (white)
+    Surface Alternate:          #fff8f0  (cream)
+
+    Text Primary:               #2d1810  (text)
+    Text Secondary:             #8b7a6e  (text-muted)
+    Text On Dark (inverted):    #ffffff  (white)
+    Text On Primary:            #ffffff  (white)
+
+    Border (default):           #ebd9c8  (brown-200)
+    Border (focus):             #c49a78  (brown-400)
+    Divider:                    #ebd9c8  (brown-200)
+
+    Like / Match / Yes:         #22c55e  (success)
+    Pass / Nope / Cancel:       #e8736a  (rose)
+    Super Like / Star:          #d4a358  (gold)
+    Verified Badge:             #d4a358  (gold)
+    Premium Badge:              #d4a358  (gold)
+    Intent Casual:              #ef4444  (rose)
+    Intent Serious:             #6b3f2e  (brown-700)
+    Intent Friendship:          #22c55e  (success)
+    Intent LetsSee:             #a8774f  (brown-500)
+    Online Indicator:           #22c55e  (success)
+    Unread Badge:               #e8736a  (rose)
+
+================================================================================
+3. GRADIENTS
+================================================================================
+
+    Button Primary:
+        linear-gradient(135deg, #6b3f2e, #4a2c20)
+
+    Button CTA (gold):
+        linear-gradient(135deg, #d4a358, #c49a78)
+
+    Text Highlight (hero heading accent words):
+        linear-gradient(135deg, #6b3f2e, #d4a358)
+
+    Step Number Circle:
+        linear-gradient(135deg, #8b5a3c, #6b3f2e)
+
+    Footer / CTA Section BG:
+        linear-gradient(135deg, #2d1810, #1a0e0a)
+
+    Profile Placeholder:
+        linear-gradient(135deg, #f5ebe1 0%, #ebd9c8 50%, #d9b99e 100%)
+
+    Match Popup Overlay:
+        radial-gradient(circle at center, rgba(212,163,88,0.15), transparent 70%)
+
+    Card Shadow Gradient (bottom inset for text readability):
+        linear-gradient(transparent 60%, rgba(45,24,16,0.4) 100%)
+
+================================================================================
+4. TYPOGRAPHY
+================================================================================
+
+    Font Family:     'Inter', -apple-system, BlinkMacSystemFont, sans-serif
+    Flutter:         GoogleFonts.interTextTheme()
+
+    Headings (h1, h2, h3):     weight 800, line-height 1.2
+    Hero title:                weight 800, clamp(2.5rem, 6vw, 4rem)  -> 32-64sp
+    Section title:             weight 800, clamp(2rem, 5vw, 3.2rem)  -> 28-48sp
+    Card title:                weight 700, 1.05rem                    -> 17sp
+    Body large:                weight 400, 1.1rem                     -> 18sp
+    Body:                      weight 400, 0.95-1rem                  -> 15-16sp
+    Body small:                weight 400, 0.85rem                    -> 14sp
+    Caption:                   weight 400, 0.75rem                    -> 12sp
+    Section tag (overline):    weight 600, 0.75rem, letter-spacing 0.1em, uppercase
+    Button:                    weight 600, 1rem                       -> 16sp
+    Nav logo:                  weight 800, 1.3rem                     -> 21sp
+
+    Flutter TextTheme (Material 3):
+        displayLarge:    weight 800, 57sp (hero headings)
+        headlineLarge:   weight 800, 36sp (section titles)
+        titleLarge:      weight 700, 22sp (card titles)
+        titleMedium:     weight 600, 16sp (list tiles, buttons)
+        bodyLarge:       weight 400, 16sp (paragraphs)
+        bodyMedium:      weight 400, 14sp (descriptions)
+        labelLarge:      weight 600, 16sp (buttons)
+        labelSmall:      weight 600, 12sp (overlines, badges)
+
+================================================================================
+5. SPACING SCALE
+================================================================================
+
+    xs:   4px    -> icon label gap, tight
+    sm:   8px    -> inline gaps, badge padding
+    md:   12px   -> card internal, tab bar padding
+    lg:   16px   -> container padding internal, gap between elements
+    xl:   20px   -> section padding, feature card internal
+    2xl:  24px   -> section gap, hero padding
+    3xl:  32px   -> hero bottom margin, button padding H
+    4xl:  40px   -> stat gap, large section gap
+    5xl:  48px   -> hero stat top margin
+    6xl:  60px   -> hero grid gap
+    7xl:  80px   -> hero bottom padding
+    8xl:  100px  -> section vertical padding
+
+    Container max-width:  1100-1200px (centered)
+    Content max-width:     560px (for paragraphs, centered text blocks)
+
+================================================================================
+6. CORNER RADIUS (BORDER RADIUS)
+================================================================================
+
+    Pill / Full Round: 60px   -> buttons, nav buttons, waitlist input, city pills
+    Round / Large:     20px   -> cards, feature cards, profile cards, dialogs
+    Medium:            16px   -> why-items, feature icons, bottom sheets
+    Small:             12px   -> floating elements, tags, small badges
+    Extra Small:       10px   -> nav logo image
+    Tiny:               8px   -> badges, very small elements
+
+================================================================================
+7. SHADOWS / ELEVATION
+================================================================================
+
+    --shadow (default card):
+        box-shadow: 0 4px 24px rgba(45,24,16,0.08)
+
+    --shadow-lg (hover / elevated):
+        box-shadow: 0 12px 48px rgba(45,24,16,0.12)
+
+    Button Primary Shadow:
+        box-shadow: 0 4px 16px rgba(74,44,32,0.3)        (default)
+        box-shadow: 0 8px 28px rgba(74,44,32,0.4)        (hover)
+
+    Match Button Nope:
+        box-shadow: 0 2px 12px rgba(239,68,68,0.2)
+
+    Match Button Super:
+        box-shadow: 0 2px 12px rgba(212,163,88,0.2)
+
+    Match Button Like:
+        box-shadow: 0 2px 12px rgba(34,197,94,0.2)
+
+    Phone Mockup:
+        box-shadow: 0 30px 80px rgba(45,24,16,0.3)
+
+    Flutter BoxShadow equivalents (all use blurStyle: BlurStyle.normal):
+
+        Card:
+            BoxShadow(color: Color(0x142D1810), blurRadius: 24, offset: Offset(0, 4))
+
+        Card Hover:
+            BoxShadow(color: Color(0x1F2D1810), blurRadius: 48, offset: Offset(0, 12))
+
+        Button Primary:
+            BoxShadow(color: Color(0x4D4A2C20), blurRadius: 16, offset: Offset(0, 4))
+            BoxShadow(color: Color(0x664A2C20), blurRadius: 28, offset: Offset(0, 8)) [hover]
+
+        Like Button:
+            BoxShadow(color: Color(0x3322C55E), blurRadius: 12, offset: Offset(0, 2))
+
+        Super Like Button:
+            BoxShadow(color: Color(0x33D4A358), blurRadius: 12, offset: Offset(0, 2))
+
+        Nope Button:
+            BoxShadow(color: Color(0x33EF4444), blurRadius: 12, offset: Offset(0, 2))
+
+================================================================================
+8. COMPONENT STYLING
+================================================================================
+
+-- BUTTONS --
+
+    Primary Button (.btn-primary):
+        background: gradient 135deg brown-700 -> brown-800
+        color: white
+        padding: 14px 32px
+        border-radius: 60px (pill)
+        font-weight: 600
+        font-size: 16px
+        box-shadow: 0 4px 16px rgba(74,44,32,0.3)
+        hover: translateY(-2px), box-shadow intensify
+
+    Outline Button (.btn-outline):
+        background: transparent
+        color: brown-800
+        border: 2px solid brown-300
+        border-radius: 60px
+        padding: 14px 32px
+        font-weight: 600
+        hover: border brown-600, background brown-100
+
+    Nav Button:
+        background: brown-700
+        color: white
+        padding: 8px 20px (smaller)
+        border-radius: 60px
+        font-size: 0.85rem, weight 600
+        hover: brown-800
+
+    Match Action Buttons (circular):
+        52x52px circle
+        background: white
+        border: 2px solid tinted (red/gold/green)
+        font-size: 1.3rem
+        hover: scale 1.12
+
+    Size variants:
+        sm: padding 8x20, 14sp
+        md: padding 14x32, 16sp (default)
+        lg: padding 18x40, 18sp
+
+-- CARDS --
+
+    Feature Card:
+        background: white
+        border: 1px solid brown-200
+        border-radius: 20px
+        padding: 36px 28px
+        hover: translateY(-4px), shadow-lg, border brown-300
+
+    Profile Card (in-app):
+        background: white
+        border-radius: 20px
+        overflow: hidden
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08)
+        internal padding: 14px 16px 12px
+
+    Why-Item Card:
+        background: white
+        border-radius: 16px
+        padding: 24px
+        border: 1px solid brown-200
+
+-- INPUTS --
+
+    Waitlist Input:
+        background: rgba(255,255,255,0.06)
+        color: white
+        border: 1px solid brown-400
+        border-radius: 60px (pill)
+        padding: 14px 20px
+        placeholder: brown-400
+        focus: border gold
+
+    App Input (deduced):
+        background: white
+        color: text (brown-900)
+        border: 1px solid brown-200
+        border-radius: 12px
+        padding: 14px 16px
+        placeholder: text-muted
+        focus: border brown-500
+
+-- BADGES & TAGS --
+
+    Section Tag:
+        background: brown-100
+        color: brown-500
+        padding: 6px 16px
+        border-radius: 100px (pill)
+        font-size: 12px, weight 600
+        letter-spacing: 0.1em, uppercase
+
+    Verified Badge (in-app):
+        background: gold
+        color: white
+        padding: 4px 10px
+        border-radius: 20px
+        font-size: 10px, weight 700
+
+    Intent Badge (in-app, Serious):
+        background: #f0fdf4
+        color: #16a34a
+        padding: 3px 10px
+        border-radius: 20px
+        font-size: 10px, weight 600
+
+    City Pill:
+        background: white
+        border: 1px solid brown-200
+        padding: 10px 24px
+        border-radius: 60px
+        font-weight: 600
+        font-size: 14px
+        color: brown-700
+        hover: translateY(-2px), shadow
+        highlight: background brown-700, color white
+
+-- NAVIGATION --
+
+    Desktop Nav:
+        position: fixed
+        background: rgba(252,248,243,0.92)  (glassmorphism)
+        backdrop-filter: blur(16px)
+        border-bottom: 1px solid brown-200
+        padding: 16px 24px
+
+    Bottom Tab Bar (in-app):
+        background: white
+        border-top: 1px solid #eee
+        tabs: font-size 10px, inactive color #aaa, active color brown-700
+        tab icon size: ~20px (1.2rem)
+
+-- PHONE MOCKUP / APP SHELL --
+
+    Phone frame:        background #1a1a2e, border-radius 44px, padding 14px
+    Phone notch:        black rounded pill at top center
+    Screen:             background #f8f4ef, border-radius 32px
+    App status bar:     padding 12px 20px 8px, font 11px, weight 600, color #666
+    App header:         padding 8px 20px 12px, border-bottom 1px solid #eee
+    App logo text:      weight 800, 18px, color brown-800, gold accent dot
+
+-- PROFILE CARD (in-app) --
+
+    Photo area:         height 200px, gradient placeholder
+    Badge (verified):   position top-right, gold bg, white text
+    Info area:          flex row: name+age+location left, intent badge right
+    Name:               weight 700, 17px, brown-900
+    Age:                weight 400, color #888
+    Location:           font 12px, color text-muted
+
+-- VOICE PROMPT PLAYER (deduced from feature) --
+
+    Waveform:           brown-200 background, brown-700 played progress
+    Play button:        circular, gold or brown-700, white icon
+    Duration:           12px, text-muted
+    Container:          white surface, border brown-200, rounded 16px, padding 12px 16px
+
+-- TYPING INDICATOR --
+
+    3 bouncing dots
+    Color: brown-300 (inactive), brown-600 (active bounce)
+    Size: 6px each, gap 4px
+    Container: transparent, padding 8px 16px
+
+-- DIVIDERS --
+
+    horizontal: 1px solid brown-200
+    thick (section): 1px solid brown-200, with padding/margin
+
+================================================================================
+9. DARK MODE PALETTE (BUILD PHASE 2)
+================================================================================
+
+    Not in scope for launch. Launch with light mode only.
+    Future dark mode:
+
+        Background:         #1a0e0a  (brown-900 territory but darker)
+        Surface:            #2d1810  (brown-900)
+        Surface Elevated:   #4a2c20  (brown-800)
+        Text Primary:       #f5ebe1  (brown-100)
+        Text Secondary:     #c49a78  (brown-400)
+        Border:             #6b3f2e  (brown-700)
+        Divider:            #4a2c20  (brown-800)
+        Gold:               #f0d6a8  (gold-light becomes primary)
+        Rose:               #ff8a80  (lighter rose for contrast)
+        Success:            #4ade80  (lighter green)
+
+================================================================================
+10. ICONS
+================================================================================
+
+    Primary icon set:     Material Icons (filled, rounded)
+    Secondary icon set:   Material Symbols (Rounded, weight 400)
+    Icon size scale:
+        xs:   12px  (badge indicators)
+        sm:   16px  (inline with text)
+        md:   20px  (bottom nav tabs, standard)
+        lg:   24px  (app bar, feature icons)
+        xl:   32px  (hero stats)
+        2xl:  52px  (feature card icons)
+
+    Icon colors:
+        Default:       brown-700 or text-muted
+        Active:        brown-700
+        Inactive:      #aaa (tab bar)
+        On Primary:    white
+        On Dark:       brown-300
+
+================================================================================
+11. ANIMATION SPECS
+================================================================================
+
+    Duration scale:
+        instant:     100ms
+        fast:        200ms
+        normal:      300ms
+        slow:        500ms
+        reveal:      800ms
+
+    Easing:
+        default:     ease (cubic-bezier(0.25, 0.1, 0.25, 1))
+        bounce:      ease-out (cubic-bezier(0, 0, 0.2, 1))
+        spring:      cubic-bezier(0.34, 1.56, 0.64, 1)
+
+    Use cases:
+        Button hover:         transform translateY(-2px), shadow intensify, 300ms ease
+        Card hover:           translateY(-4px), shadow-lg, 300ms ease
+        Match popup:          scale 0 -> 1 + opacity 0 -> 1, 500ms spring
+        Floating elements:    translateY oscillation, 4s ease-in-out infinite
+        Swipe card exit:      translateX(+/-200px) + rotate, 300ms ease
+        Fade in:              opacity 0 -> 1, 200ms ease
+        Slide up:             translateY(20) -> 0 + opacity 0 -> 1, 300ms bounce
+        Pulse (heart):        scale 1 -> 1.05 -> 1, 1s ease-in-out
+        Typing dots:          sequential translateY bounce, 1.4s infinite, staggered
+
+    scroll-behavior: smooth
+    html: scroll-behavior: smooth
+
+================================================================================
+12. FLUTTER THEME DATA (COPY-PASTE READY)
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class BrowniesTheme {
+  static const _brown900 = Color(0xFF2D1810);
+  static const _brown800 = Color(0xFF4A2C20);
+  static const _brown700 = Color(0xFF6B3F2E);
+  static const _brown600 = Color(0xFF8B5A3C);
+  static const _brown500 = Color(0xFFA8774F);
+  static const _brown400 = Color(0xFFC49A78);
+  static const _brown300 = Color(0xFFD9B99E);
+  static const _brown200 = Color(0xFFEBD9C8);
+  static const _brown100 = Color(0xFFF5EBE1);
+  static const _brown50  = Color(0xFFFCF8F3);
+
+  static const _gold       = Color(0xFFD4A358);
+  static const _goldLight  = Color(0xFFF0D6A8);
+
+  static const _rose       = Color(0xFFE8736A);
+  static const _roseDark   = Color(0xFFC94D44);
+
+  static const _cream      = Color(0xFFFFF8F0);
+  static const _white      = Color(0xFFFFFFFF);
+  static const _text       = Color(0xFF2D1810);
+  static const _textMuted  = Color(0xFF8B7A6E);
+  static const _success    = Color(0xFF22C55E);
+  static const _error      = Color(0xFFEF4444);
+
+  static const _tabInactive = Color(0xFFAAAAAA);
+  static const _intentCasualBg  = Color(0xFFFEF2F2);
+  static const _intentCasualFg  = Color(0xFFDC2626);
+  static const _intentSeriousBg = Color(0xFFF5EBE1);
+  static const _intentSeriousFg = Color(0xFF6B3F2E);
+  static const _intentFriendBg  = Color(0xFFF0FDF4);
+  static const _intentFriendFg  = Color(0xFF16A34A);
+  static const _intentLetsSeeBg = Color(0xFFF5EBE1);
+  static const _intentLetsSeeFg = Color(0xFFA8774F);
+  static const _verifiedBg      = Color(0xFFD4A358);
+
+  static ThemeData get lightTheme {
+    final colorScheme = ColorScheme.light(
+      primary: _brown700,
+      onPrimary: _white,
+      primaryContainer: _brown100,
+      onPrimaryContainer: _brown900,
+      secondary: _gold,
+      onSecondary: _white,
+      secondaryContainer: _goldLight,
+      onSecondaryContainer: _brown800,
+      surface: _white,
+      onSurface: _text,
+      surfaceVariant: _cream,
+      onSurfaceVariant: _textMuted,
+      error: _rose,
+      onError: _white,
+      errorContainer: Color(0xFFFEF2F2),
+      outline: _brown200,
+      outlineVariant: _brown100,
+      shadow: _brown900.withOpacity(0.08),
+    );
+
+    final textTheme = GoogleFonts.interTextTheme();
+
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      textTheme: textTheme.copyWith(
+        displayLarge:  textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w800),
+        headlineLarge: textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w800, color: _brown900),
+        headlineMedium:textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800, color: _brown900),
+        titleLarge:    textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700, color: _brown900),
+        titleMedium:   textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+        bodyLarge:     textTheme.bodyLarge?.copyWith(color: _text),
+        bodyMedium:    textTheme.bodyMedium?.copyWith(color: _textMuted),
+        bodySmall:     textTheme.bodySmall?.copyWith(color: _textMuted),
+        labelLarge:    textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600, fontSize: 16),
+        labelSmall:    textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, letterSpacing: 1.6),
+      ),
+
+      scaffoldBackgroundColor: _brown50,
+      cardTheme: CardTheme(
+        color: _white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: _brown200),
+        ),
+        margin: EdgeInsets.zero,
+      ),
+
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _brown700,
+          foregroundColor: _white,
+          elevation: 4,
+          shadowColor: _brown800.withOpacity(0.3),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(60)),
+          textStyle: textTheme.labelLarge?.copyWith(color: _white),
+        ),
+      ),
+
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: _brown800,
+          side: BorderSide(color: _brown300, width: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(60)),
+          textStyle: textTheme.labelLarge,
+          backgroundColor: Colors.transparent,
+        ),
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: _white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: _brown200),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: _brown200),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: _brown500, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: _rose),
+        ),
+        hintStyle: TextStyle(color: _textMuted),
+      ),
+
+      appBarTheme: AppBarTheme(
+        backgroundColor: _brown50.withOpacity(0.92),
+        foregroundColor: _brown900,
+        elevation: 0,
+        scrolledUnderElevation: 1,
+        shadowColor: _brown200,
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w800,
+          color: _brown900,
+          fontSize: 18,
+        ),
+      ),
+
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: _white,
+        selectedItemColor: _brown700,
+        unselectedItemColor: _tabInactive,
+        type: BottomNavigationBarType.fixed,
+        elevation: 0,
+        selectedLabelStyle: textTheme.labelSmall?.copyWith(fontSize: 10),
+        unselectedLabelStyle: textTheme.labelSmall?.copyWith(fontSize: 10),
+      ),
+
+      chipTheme: ChipThemeData(
+        backgroundColor: _brown100,
+        labelStyle: textTheme.labelSmall?.copyWith(color: _brown500),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+        side: BorderSide.none,
+      ),
+
+      dividerTheme: DividerThemeData(
+        color: _brown200,
+        thickness: 1,
+        space: 1,
+      ),
+
+      iconTheme: IconThemeData(color: _brown700),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
+  // Intent badge colors (helper)
+  static ({Color bg, Color fg}) intentColors(String intent) {
+    switch (intent) {
+      case 'casual':     return (bg: _intentCasualBg, fg: _intentCasualFg);
+      case 'serious':    return (bg: _intentSeriousBg, fg: _intentSeriousFg);
+      case 'friendship': return (bg: _intentFriendBg, fg: _intentFriendFg);
+      default:           return (bg: _intentLetsSeeBg, fg: _intentLetsSeeFg);
+    }
+  }
+
+  // Verified badge
+  static const verifiedBg = _verifiedBg;
+
+  // Gradients
+  static const primaryGradient = LinearGradient(
+    colors: [_brown700, _brown800],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const goldGradient = LinearGradient(
+    colors: [_gold, _brown400],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const textHighlightGradient = LinearGradient(
+    colors: [_brown700, _gold],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const darkGradient = LinearGradient(
+    colors: [_brown900, Color(0xFF1A0E0A)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const profilePlaceholderGradient = LinearGradient(
+    colors: [_brown100, _brown200, _brown300],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // Shadows
+  static List<BoxShadow> get cardShadow => [
+    BoxShadow(color: _brown900.withOpacity(0.08), blurRadius: 24, offset: Offset(0, 4)),
+  ];
+
+  static List<BoxShadow> get cardShadowLg => [
+    BoxShadow(color: _brown900.withOpacity(0.12), blurRadius: 48, offset: Offset(0, 12)),
+  ];
+
+  static List<BoxShadow> get buttonShadow => [
+    BoxShadow(color: _brown800.withOpacity(0.3), blurRadius: 16, offset: Offset(0, 4)),
+  ];
+
+  static List<BoxShadow> matchButtonShadow(Color color) => [
+    BoxShadow(color: color.withOpacity(0.2), blurRadius: 12, offset: Offset(0, 2)),
+  ];
+}
+
+================================================================================
+13. MATCH POPUP / IT'S A MATCH SCREEN
+================================================================================
+
+    Animation sequence:
+        1. Overlay fades in (opacity, 300ms)
+        2. Radial gold gradient pulses behind (scale, 500ms spring)
+        3. Both avatars slide in from left and right (translateX, 500ms)
+        4. "It's a Match!" text fades in + scales up (opacity + scale, 300ms delay)
+        5. Partner name + compatibility % fades in (opacity, 200ms delay)
+        6. Buttons appear: "Send a Message" (primary) + "Keep Swiping" (outline)
+
+    Colors:
+        Overlay:     rgba(0,0,0,0.7) + backdrop filter blur
+        Glow:        radial gradient gold at center
+        Text:        white + gold for match word
+        Avatar size: 100px circular, white border 3px
+        Heart icon:  rose or gold, pulsing animation
+
+================================================================================
+14. LOTTIE / ANIMATION ASSETS
+================================================================================
+
+    Match popup:      heart particles burst (rose + gold colors)
+    Loading:          spinning chai cup or simple pulse
+    Verified check:   checkmark draw animation (green)
+    Swipe tutorial:   finger swipe animation
+    Empty state:      illustrated character (warming, Indian-themed)
+
+================================================================================
+15. ASSET SPECS
+================================================================================
+
+    Logo:         PNG/SVG, 36px app bar, 192px PWA icon
+    Icons:        SVG preferred, 24px base, 2px stroke
+    Illustrations: PNG @3x, max 200KB
+    Photos:        user-uploaded, strip EXIF server-side
+    Lottie:        JSON, <50KB, 60fps
+    Fonts:         Inter via google_fonts (cached)
+
+================================================================================
+END
+================================================================================
