@@ -1,8 +1,7 @@
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import aliased, joinedload
 
 from core.config import settings
 from core.database import get_db
@@ -15,7 +14,7 @@ from models import (
 from schemas import (
     AdminDashboardOut, AdminReportOut, AdminHandleReportRequest,
     AdminUserOut, AdminUserDetailOut, AdminPhotoOut, AdminVoicePromptOut,
-    AdminSubscriptionOut, AdminUserUpdateRequest, SuccessResponse,
+    AdminSubscriptionOut, AdminChatOut, AdminUserUpdateRequest, SuccessResponse,
 )
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin"])
@@ -258,6 +257,72 @@ async def get_subscriptions(
             ends_at=s.ends_at, is_active=s.is_active,
         )
         for s, name in rows
+    ]
+
+
+@router.get("/chats", response_model=list[AdminChatOut])
+async def get_chats(
+    page: int = Query(default=1, ge=1),
+    per_page: int = Query(default=20, ge=1, le=200),
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    U1 = aliased(User)
+    U2 = aliased(User)
+    last_content = (
+        select(Message.content)
+        .where(Message.match_id == Match.id)
+        .order_by(Message.created_at.desc())
+        .limit(1)
+        .correlate(Match)
+        .scalar_subquery()
+    )
+    last_time = (
+        select(Message.created_at)
+        .where(Message.match_id == Match.id)
+        .order_by(Message.created_at.desc())
+        .limit(1)
+        .correlate(Match)
+        .scalar_subquery()
+    )
+    stmt = (
+        select(
+            Match.id,
+            Match.user1_id,
+            Match.user2_id,
+            U1.name.label("user1_name"),
+            U2.name.label("user2_name"),
+            Match.matched_at,
+            Match.is_active,
+            func.count(Message.id).label("message_count"),
+            last_content.label("last_message"),
+            last_time.label("last_message_at"),
+        )
+        .join(U1, U1.id == Match.user1_id)
+        .join(U2, U2.id == Match.user2_id)
+        .outerjoin(Message, Message.match_id == Match.id)
+        .group_by(Match.id, U1.name, U2.name)
+        .order_by(Match.matched_at.desc())
+        .offset((page - 1) * per_page)
+        .limit(per_page)
+    )
+    result = await db.execute(stmt)
+    rows = result.all()
+
+    return [
+        AdminChatOut(
+            id=row.id,
+            user1_id=row.user1_id,
+            user2_id=row.user2_id,
+            user1_name=row.user1_name,
+            user2_name=row.user2_name,
+            matched_at=row.matched_at,
+            is_active=row.is_active,
+            message_count=row.message_count,
+            last_message=row.last_message,
+            last_message_at=row.last_message_at,
+        )
+        for row in rows
     ]
 
 

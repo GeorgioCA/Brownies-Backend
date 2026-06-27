@@ -439,6 +439,19 @@ class AdminSubscriptionOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class AdminChatOut(BaseModel):
+    id: int
+    user1_id: int
+    user2_id: int
+    user1_name: str
+    user2_name: str
+    matched_at: datetime
+    is_active: bool
+    message_count: int
+    last_message: Optional[str] = None
+    last_message_at: Optional[datetime] = None
+
+
 class AdminUserUpdateRequest(BaseModel):
     is_active: Optional[bool] = None
     is_premium: Optional[bool] = None
