@@ -1,21 +1,28 @@
 services:
-  app:
-    build: .
+  brownies:
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: brownies-api
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     environment:
-      - DATABASE_URL=sqlite+aiosqlite:///./data/brownies.db
-      - JWT_SECRET=${JWT_SECRET:-brownies-dev-secret-replace-in-production}
-      - DEBUG=${DEBUG:-true}
+      - DATABASE_URL=sqlite+aiosqlite:///app/data/brownies.db
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production-use-64-char-random}
+      - JWT_ALGORITHM=${JWT_ALGORITHM:-HS256}
+      - DEBUG=${DEBUG:-false}
       - UPLOAD_DIR=/app/data/uploads
-      - OTP_BYPASS=123456
+      - OTP_BYPASS=${OTP_BYPASS:-}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID:-}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-}
+      - TWILIO_PHONE=${TWILIO_PHONE:-}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES:-60}
+      - REFRESH_TOKEN_EXPIRE_DAYS=${REFRESH_TOKEN_EXPIRE_DAYS:-30}
     volumes:
       - brownies-data:/app/data
-      - .:/app
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/api/v1/health').raise_for_status()"]
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://localhost:8000/api/v1/health')"]
       interval: 30s
       timeout: 5s
       retries: 3
