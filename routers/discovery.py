@@ -9,7 +9,7 @@ from core.database import get_db
 from core.auth_deps import get_current_user, get_premium_user
 from core.geo import haversine_distance
 from core.exceptions import ValidationException, NotFoundException, PaymentRequiredException
-from models import User, UserPhoto, UserLanguage, VoicePrompt, Swipe, Match, BlockReport, Notification
+from models import User, UserPhoto, UserLanguage, VoicePrompt, Swipe, Match, BlockReport, Notification, UserPreferences
 from schemas import (
     DiscoveryProfileOut, UserPhotoOut, UserLanguageOut, VoicePromptOut,
     SwipeRequest, SwipeStatsOut, SuccessResponse,
@@ -64,6 +64,10 @@ async def get_discovery(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    # Load user preferences
+    pref_result = await db.execute(select(UserPreferences).where(UserPreferences.user_id == user.id))
+    pref = pref_result.scalar_one_or_none()
+
     # Get already swiped / blocked user IDs
     swiped_sub = select(Swipe.swiped_id).where(Swipe.swiper_id == user.id)
     blocked_sub = select(BlockReport.reported_id).where(
@@ -75,6 +79,13 @@ async def get_discovery(
     all_exclude = union_all(swiped_sub, blocked_sub, blocked_me_sub)
     exclude_result = await db.execute(all_exclude)
     exclude_ids = {row[0] for row in exclude_result}
+
+    # Compute age boundaries from preferences
+    today = datetime.now(timezone.utc).date()
+    min_age = pref.min_age if pref else 18
+    max_age = pref.max_age if pref else 50
+    max_dob = today.replace(year=today.year - min_age).isoformat()
+    min_dob = today.replace(year=today.year - max_age).isoformat()
 
     # Build query for discoverable users
     stmt = (
@@ -88,32 +99,51 @@ async def get_discovery(
             User.id != user.id,
             User.profile_complete == True,
             User.is_active == True,
-            User.id.not_in(exclude_ids) if exclude_ids else True,
-            User.gender != user.gender,  # Opposite gender for now; customizable via prefs later
+            User.date_of_birth >= min_dob,
+            User.date_of_birth <= max_dob,
         )
-        .limit(per_page)
     )
 
-    # Apply user preferences filters
-    # (Pulled from user_preferences attached to this user; loaded via relationship)
-    # For simplicity, we apply basic filters inline
-    if user.intent:
-        stmt = stmt.where(User.intent == user.intent)
+    # Exclude already interacted users
+    if exclude_ids:
+        stmt = stmt.where(User.id.not_in(exclude_ids))
 
-    # City filtering — prefer same city
+    # Gender filter from preferences
+    if pref and pref.preferred_gender != "all":
+        stmt = stmt.where(User.gender == pref.preferred_gender)
+
+    # Intent filter from preferences
+    if pref and pref.intent_filter:
+        stmt = stmt.where(User.intent == pref.intent_filter)
+
+    # City filter from preferences
+    if pref and pref.city_filter:
+        stmt = stmt.where(User.city == pref.city_filter)
+
+    # City sorting — prefer same city
     if user.city:
         stmt = stmt.order_by(
             case((User.city == user.city, 0), else_=1)
         )
+    else:
+        stmt = stmt.order_by(User.created_at.desc())
+
+    stmt = stmt.limit(per_page)
 
     result = await db.execute(stmt)
     candidates = result.unique().scalars().all()
 
     profiles = [_discovery_out(u, user) for u in candidates]
 
-    # Sort by distance if location available
-    if user.location_lat is not None:
-        profiles.sort(key=lambda p: p.distance_km or 99999)
+    # Filter by max distance and sort by distance if location available
+    max_dist = pref.max_distance_km if pref else 50
+    if user.location_lat is not None and user.location_lng is not None:
+        filtered = [
+            p for p in profiles
+            if p.distance_km is None or p.distance_km <= max_dist
+        ]
+        filtered.sort(key=lambda p: p.distance_km or 99999)
+        profiles = filtered
 
     return profiles
 
