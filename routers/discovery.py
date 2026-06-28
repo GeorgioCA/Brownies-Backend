@@ -109,7 +109,7 @@ async def get_discovery(
         stmt = stmt.where(User.id.not_in(exclude_ids))
 
     # Gender filter from preferences
-    if pref and pref.preferred_gender != "all":
+    if pref and pref.preferred_gender not in ("all", "both"):
         stmt = stmt.where(User.gender == pref.preferred_gender)
 
     # Intent filter from preferences
