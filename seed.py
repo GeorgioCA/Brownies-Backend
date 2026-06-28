@@ -2,7 +2,7 @@ import asyncio
 from sqlalchemy import select
 from core.database import async_session, init_db, engine
 from core.security import hash_password
-from models import User, Plan
+from models import User, Plan, UserPreferences
 from datetime import datetime, timezone
 
 
@@ -33,27 +33,43 @@ async def seed():
 
         if existing:
             print(f"Default account already exists (phone: {DEFAULT_PHONE})")
-            return
+        else:
+            user = User(
+                phone_number=DEFAULT_PHONE,
+                phone_verified=True,
+                password_hash=hash_password(DEFAULT_PASSWORD),
+                name=DEFAULT_NAME,
+                date_of_birth="2000-01-01",
+                gender="male",
+                city="Mumbai",
+                profile_complete=True,
+                is_premium=True,
+                photo_verified=True,
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+            )
+            db.add(user)
+            await db.flush()
+            print("Default account created:")
+            print(f"  Phone:    {DEFAULT_PHONE}")
+            print(f"  Password: {DEFAULT_PASSWORD}")
+            existing = user
 
-        user = User(
-            phone_number=DEFAULT_PHONE,
-            phone_verified=True,
-            password_hash=hash_password(DEFAULT_PASSWORD),
-            name=DEFAULT_NAME,
-            date_of_birth="2000-01-01",
-            gender="male",
-            city="Mumbai",
-            profile_complete=True,
-            is_premium=True,
-            photo_verified=True,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+        # Ensure admin has preferences
+        pref_result = await db.execute(
+            select(UserPreferences).where(UserPreferences.user_id == existing.id)
         )
-        db.add(user)
+        if not pref_result.scalar_one_or_none():
+            db.add(UserPreferences(
+                user_id=existing.id,
+                min_age=18,
+                max_age=50,
+                preferred_gender="all",
+                max_distance_km=500,
+            ))
+            print("Admin preferences created (all genders, 18-50, 500km).")
+
         await db.commit()
-        print("Default account created:")
-        print(f"  Phone:    {DEFAULT_PHONE}")
-        print(f"  Password: {DEFAULT_PASSWORD}")
 
 
 if __name__ == "__main__":
